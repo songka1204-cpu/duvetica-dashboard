@@ -1,0 +1,3159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUVETICA Weekly Sales Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #95a5a6;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --border: #e0e0e0;
+            --background: #ffffff;
+            --text: #1a1a1a;
+            --text-light: #666666;
+            --light-bg: #f8f9fa;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 24px rgba(0,0,0,0.12);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* 애니메이션 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes countUp {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .animate-delay-1 { animation-delay: 0.1s; }
+        .animate-delay-2 { animation-delay: 0.2s; }
+        .animate-delay-3 { animation-delay: 0.3s; }
+        
+        /* 헤더 - 그라데이션 배경 */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 30px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-hover);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo-space {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        /* AI 분석 섹션 */
+        .ai-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .ai-box {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+        
+        .ai-box:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+        
+        .ai-box h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ai-box h3 .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        .ai-box.insight h3 { color: var(--primary); }
+        .ai-box.insight h3 .icon { background: rgba(52, 152, 219, 0.1); }
+        
+        .ai-box.warning h3 { color: var(--warning); }
+        .ai-box.warning h3 .icon { background: rgba(243, 156, 18, 0.1); }
+        
+        .ai-box.action h3 { color: var(--success); }
+        .ai-box.action h3 .icon { background: rgba(39, 174, 96, 0.1); }
+        
+        .ai-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .ai-box li {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            border-bottom: 1px dotted var(--border);
+            transition: var(--transition);
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .ai-box li:last-child {
+            border-bottom: none;
+        }
+        
+        .ai-box li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+            font-size: 0.8rem;
+        }
+        
+        .ai-box li:hover {
+            background: var(--light-bg);
+            margin: 0 -12px;
+            padding-left: 32px;
+            padding-right: 12px;
+            border-radius: 6px;
+        }
+        
+        /* AI 분석 텍스트 스타일 */
+        .ai-box .positive {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .ai-box .negative {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .ai-box .highlight {
+            background: linear-gradient(120deg, #fff3cd 0%, #fff3cd 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .ai-box.insight li::before {
+            content: '✓';
+            color: #27ae60;
+        }
+        
+        .ai-box.warning li::before {
+            content: '!';
+            color: #f39c12;
+            font-weight: 700;
+        }
+        
+        .ai-box.action li::before {
+            content: '▶';
+            color: #3498db;
+        }
+        
+        /* BEST 제품 순위 섹션 */
+        .best-products {
+            display: grid;
+            grid-template-columns: 7fr 3fr;
+            grid-template-rows: auto auto;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .best-products .best-card:nth-child(3) {
+            grid-column: 1 / -1;
+        }
+        
+        .best-card {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+        
+        .best-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .best-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--light-bg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .best-card h3 .emoji {
+            font-size: 1.3rem;
+        }
+        
+        .best-card table {
+            width: 100%;
+            font-size: 0.85rem;
+        }
+        
+        .best-card th {
+            background: var(--light-bg);
+            padding: 10px 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+        
+        .best-card td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .best-card tbody tr:hover {
+            background: rgba(52, 152, 219, 0.05);
+        }
+        
+        .best-card tbody tr.rank-1 {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0.1) 100%);
+        }
+        
+        .best-card tbody tr.rank-2 {
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.3) 0%, rgba(192, 192, 192, 0.1) 100%);
+        }
+        
+        .best-card tbody tr.rank-3 {
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.3) 0%, rgba(205, 127, 50, 0.1) 100%);
+        }
+        
+        .rank-cell {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1rem;
+            width: 50px;
+            min-width: 50px;
+            white-space: nowrap;
+        }
+        
+        .rank-cell.medal-gold,
+        .rank-cell.medal-silver,
+        .rank-cell.medal-bronze {
+            font-size: 1.1rem;
+        }
+        
+        .spec-cell {
+            font-size: 0.8rem;
+            color: #666;
+            white-space: nowrap;
+        }
+        
+        /* 판매율 테이블 최적화 (좁은 공간) */
+        .sell-rate-card .compact-table {
+            font-size: 0.82rem;
+        }
+        
+        .sell-rate-card .compact-table .product-name {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .sell-rate-card .compact-table th,
+        .sell-rate-card .compact-table td {
+            padding: 8px 6px;
+        }
+        
+        .medal-gold { color: #FFD700; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .medal-silver { color: #C0C0C0; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .medal-bronze { color: #CD7F32; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        
+        .product-name {
+            font-weight: 500;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .category-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            background: var(--light-bg);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+        .gender-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .gender-badge.women {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+        
+        .gender-badge.men {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .rate-highlight {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .status-cell {
+            text-align: center;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: rgba(39, 174, 96, 0.15);
+            color: var(--success);
+        }
+        
+        .badge-danger {
+            background: rgba(231, 76, 60, 0.15);
+            color: var(--danger);
+        }
+        
+        .badge-normal {
+            background: var(--light-bg);
+            color: var(--text-light);
+        }
+        
+        /* KPI 카드 (2x3 그리드) */
+        .kpi-cards {
+            display: grid;
+            grid-template-columns: 2fr 3fr 1fr;
+            grid-template-rows: repeat(2, auto);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .kpi-card {
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        
+        .kpi-card .kpi-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .kpi-card .kpi-icon {
+            font-size: 1.5rem;
+        }
+        
+        .kpi-card .kpi-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .kpi-card .kpi-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .kpi-card .kpi-comparison {
+            font-size: 15px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            white-space: nowrap;
+        }
+        
+        .kpi-card .kpi-comparison .value,
+        .kpi-card .kpi-comparison .unit {
+            font-size: 15px;
+            font-weight: normal;
+        }
+        
+        .kpi-card .kpi-change {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .kpi-card .kpi-change.positive { color: #27ae60; }
+        .kpi-card .kpi-change.negative { color: #e74c3c; }
+        
+        .kpi-card .kpi-sub {
+            font-size: 15px;
+            color: var(--text-light);
+            padding-top: 12px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            white-space: nowrap;
+        }
+        
+        .kpi-card .kpi-sub .value,
+        .kpi-card .kpi-sub .unit {
+            font-size: 15px;
+            font-weight: normal;
+        }
+        
+        .kpi-card .kpi-sub-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .kpi-card .kpi-sub-change {
+            font-size: 15px;
+            margin-left: 6px;
+        }
+        
+        .kpi-card .kpi-sub-change.positive { color: #27ae60; }
+        .kpi-card .kpi-sub-change.negative { color: #e74c3c; }
+        
+        /* KPI 카드 배경색 */
+        .kpi-card.bg-blue { background: #e3f2fd; }
+        .kpi-card.bg-purple { background: #f3e5f5; }
+        .kpi-card.bg-teal { background: #e0f2f1; }
+        .kpi-card.bg-green { background: #e8f5e9; }
+        .kpi-card.bg-orange { background: #fff3e0; }
+        .kpi-card.bg-red { background: #ffebee; }
+        
+        /* 통일된 KPI 카드 레이아웃 */
+        .kpi-card .kpi-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        
+        .kpi-card .kpi-header .kpi-icon {
+            font-size: 1.3rem;
+        }
+        
+        .kpi-card .kpi-header .kpi-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .kpi-card .kpi-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .kpi-item {
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            padding: 8px 6px;
+            border-right: 1px solid #e8e8e8;
+        }
+        
+        .kpi-item:last-child {
+            border-right: none;
+        }
+        
+        .kpi-item.full-width {
+            flex: 1 1 100%;
+            border-right: none;
+        }
+        
+        .kpi-label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        
+        .kpi-main {
+            margin-bottom: 8px;
+        }
+        
+        .kpi-value {
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .unit {
+            font-size: 14px;
+            color: #666;
+            margin-left: 2px;
+        }
+        
+        .kpi-comparison {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #666;
+        }
+        
+        .comparison-label {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 1px;
+        }
+        
+        .comparison-value {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .comparison-growth {
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        .comparison-growth.positive {
+            color: #2e7d32;
+        }
+        
+        .comparison-growth.negative {
+            color: #d32f2f;
+        }
+        
+        .comparison-growth.neutral {
+            color: #666;
+        }
+        
+        .kpi-card .kpi-footer {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+        }
+        
+        .kpi-note {
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        .kpi-card .kpi-footer .growth {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .kpi-card .kpi-footer .growth.positive { color: #27ae60; }
+        .kpi-card .kpi-footer .growth.negative { color: #e74c3c; }
+        
+        /* 기존 호환성 */
+        .kpi-section { display: none; }
+        .kpi-divider { display: none; }
+        
+        .kpi-card .comparison {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+        
+        .kpi-card .change {
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .kpi-card .change.positive {
+            color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .kpi-card .change.negative {
+            color: var(--danger);
+            background: rgba(231, 76, 60, 0.1);
+        }
+        
+        /* 섹션 공통 */
+        .section {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--light-bg);
+        }
+        
+        .section-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-header h3 .emoji {
+            font-size: 1.3rem;
+        }
+        
+        .section-header h3 .unit-note {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #888;
+            margin-left: 8px;
+        }
+        
+        /* 2단 헤더 테이블 */
+        .two-row-header thead .header-row-1 th {
+            background: #f5f5f5;
+            font-weight: 700;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .two-row-header thead .header-row-2 th {
+            background: #fafafa;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .two-row-header thead .group-header {
+            text-align: center;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+        
+        /* 컴팩트 테이블 */
+        .compact-table {
+            font-size: 0.88rem;
+        }
+        
+        .compact-table th,
+        .compact-table td {
+            padding: 10px 8px;
+        }
+        
+        .compact-table .header-row-1 th {
+            font-size: 0.95rem;
+        }
+        
+        .compact-table .header-row-2 th {
+            font-size: 0.82rem;
+        }
+        
+        .compact-table .number-cell {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* 카테고리 테이블 - 스타일링 */
+        .category-table {
+            border: 1px solid #e0e0e0;
+        }
+        
+        /* 모든 구분선 연한 회색 통일 */
+        .category-table th,
+        .category-table td {
+            border: 1px solid #e0e0e0 !important;
+        }
+        
+        /* WOMEN 행 배경색 - 분홍색 */
+        .category-table tbody tr.women-row {
+            background-color: #ffe6f0 !important;
+        }
+        
+        /* WOMEN 하위 행 배경색 - 연한 분홍색 */
+        .category-table tbody tr.women-sub-row {
+            background-color: #fff0f5 !important;
+        }
+        
+        /* MEN 행 배경색 - 연한 파랑색 */
+        .category-table tbody tr.men-row {
+            background-color: #e6f2ff !important;
+        }
+        
+        /* MEN 하위 행 배경색 - 연한 파랑색 */
+        .category-table tbody tr.men-sub-row {
+            background-color: #f0f7ff !important;
+        }
+        
+        /* WOMEN DOWN 강조 */
+        .category-table tbody tr.highlight-row td {
+            font-weight: 700;
+        }
+        
+        /* ACC/SHOES 카테고리 굵게 */
+        .category-table tbody tr.bold-category td:first-child {
+            font-weight: 700;
+        }
+        
+        /* 차트 */
+        .chart-container {
+            height: 400px;
+            position: relative;
+        }
+        
+        /* 테이블 */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.9rem;
+        }
+        
+        th {
+            background: var(--light-bg);
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition);
+        }
+        
+        th:hover {
+            background: #eee;
+        }
+        
+        th .sort-icon {
+            margin-left: 6px;
+            opacity: 0.3;
+            font-size: 0.7rem;
+        }
+        
+        th.sorted .sort-icon {
+            opacity: 1;
+        }
+        
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        
+        tbody tr {
+            transition: var(--transition);
+        }
+        
+        tbody tr:nth-child(even) {
+            background: rgba(248, 249, 250, 0.5);
+        }
+        
+        tbody tr:hover {
+            background: rgba(52, 152, 219, 0.05);
+            transform: scale(1.005);
+        }
+        
+        .total-row {
+            background: linear-gradient(90deg, rgba(52, 152, 219, 0.08) 0%, rgba(52, 152, 219, 0.02) 100%) !important;
+            font-weight: 600;
+        }
+        
+        .parent-row {
+            background: var(--light-bg) !important;
+            font-weight: 600;
+        }
+        
+        .sub-row td:first-child {
+            color: var(--text-light);
+        }
+        
+        .indent {
+            display: inline-block;
+            width: 20px;
+        }
+        
+        .category-cell {
+            text-align: left;
+        }
+        
+        .number-cell {
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .positive { color: var(--success); font-weight: 600; }
+        .negative { color: var(--danger); font-weight: 600; }
+        .neutral { color: var(--secondary); }
+        
+        /* Women Down 상세 테이블 */
+        .detail-section {
+            margin-top: 20px;
+        }
+        
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 12px 0;
+        }
+        
+        .detail-header .toggle-icon {
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+        .detail-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+        
+        .detail-tables {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .detail-tables.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+        }
+        
+        /* Women Down 카드 - 좌우 2단 레이아웃 */
+        .detail-table {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 0;
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 0;
+            width: 100%;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        
+        .detail-table:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .detail-table .left-section {
+            padding: 25px;
+            border-right: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+        
+        .detail-table .left-section h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text);
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .detail-table .left-section .ai-insights {
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+        
+        .detail-table .left-section .ai-insights p {
+            margin: 10px 0;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 3px solid #27ae60;
+        }
+        
+        .detail-table .left-section .ai-insights p.warning {
+            border-left-color: #f39c12;
+        }
+        
+        .detail-table .left-section .ai-insights p.danger {
+            border-left-color: #e74c3c;
+        }
+        
+        .detail-table .right-section {
+            padding: 25px;
+        }
+        
+        .detail-table .right-section h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #666;
+        }
+        
+        .detail-table .right-section table {
+            width: 100%;
+            font-size: 0.85rem;
+        }
+        
+        .detail-table .right-section th,
+        .detail-table .right-section td {
+            padding: 10px 12px;
+        }
+        
+        .detail-table .right-section tbody tr:nth-child(even) {
+            background: rgba(255,255,255,0.5);
+        }
+        
+        /* 비교 테이블 2단 헤더 */
+        .detail-table .right-section table th {
+            background-color: #f5f5f5;
+            font-size: 0.82rem;
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .detail-table .right-section table td {
+            font-size: 0.85rem;
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .detail-table .right-section table td:first-child {
+            text-align: left;
+            font-family: inherit;
+        }
+        
+        /* 효율 분석 색상 */
+        .efficiency-high {
+            color: #2e7d32 !important;
+            font-weight: bold;
+            background-color: #e8f5e9 !important;
+        }
+        
+        .efficiency-low {
+            color: #d32f2f !important;
+            font-weight: bold;
+            background-color: #ffebee !important;
+        }
+        
+        .efficiency-neutral {
+            color: #666 !important;
+        }
+        
+        /* AI 인사이트 - 긍정/경고 구분 */
+        .ai-insights .insights-positive p {
+            border-left-color: #27ae60;
+        }
+        
+        .ai-insights .insights-warnings p {
+            border-left-color: #f39c12;
+            background: #fff8e1;
+        }
+        
+        .ai-insights .insights-warnings p.danger {
+            border-left-color: #e74c3c;
+            background: #ffebee;
+        }
+        
+        .detail-table th, .detail-table td {
+            padding: 10px 12px;
+        }
+        
+        .detail-table tbody tr:nth-child(even) {
+            background: rgba(255,255,255,0.5);
+        }
+        
+        /* AI 인사이트 박스 (Detail Table 위) */
+        .detail-insight {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text);
+        }
+        
+        .detail-insight strong {
+            color: var(--primary);
+        }
+        
+        /* Golden Zone 섹션 */
+        .golden-zone {
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 2px solid var(--border);
+        }
+        
+        .golden-zone h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .golden-zone .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        
+        /* Golden Zone 테이블 스타일 */
+        .golden-zone-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .golden-zone-table th {
+            background-color: #f5f5f5;
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .golden-zone-table td {
+            padding: 12px 10px;
+            border: 1px solid #e0e0e0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .golden-zone-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .golden-zone .rank-1 {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0.1) 100%) !important;
+        }
+        
+        .golden-zone .rank-2 {
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.3) 0%, rgba(192, 192, 192, 0.1) 100%) !important;
+        }
+        
+        .golden-zone .rank-3 {
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.3) 0%, rgba(205, 127, 50, 0.1) 100%) !important;
+        }
+        
+        .golden-zone .high-rate {
+            font-weight: 700;
+        }
+        
+        .golden-zone .high-efficiency {
+            background: #e8f5e9 !important;
+        }
+        
+        .golden-zone .combo-cell {
+            font-weight: 600;
+            text-align: left !important;
+            font-family: inherit;
+        }
+        
+        .golden-zone .score-cell {
+            color: #1976d2;
+            font-weight: bold;
+        }
+        
+        /* Golden Zone AI 인사이트 카드 - 깔끔한 전문적 디자인 */
+        .golden-zone-insight-card {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-left: 5px solid #1976d2;
+            border-radius: 8px;
+            padding: 25px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        
+        .golden-zone-insight-card h4 {
+            margin: 0 0 20px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 12px;
+        }
+        
+        .golden-zone-insight-card .insight-content {
+            font-size: 0.92rem;
+            line-height: 1.9;
+            color: #444;
+        }
+        
+        .golden-zone-insight-card .insight-content p {
+            margin: 14px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .golden-zone-insight-card .insight-content p::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #1976d2;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .golden-zone-insight-card .insight-content strong {
+            color: #1976d2;
+            font-weight: 600;
+        }
+        
+        .golden-zone-insight-card .insight-highlight {
+            color: #1976d2;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .golden-zone-insight-card .insight-divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 18px 0;
+        }
+        
+        /* 상품 수 컬럼 스타일 */
+        .golden-zone-table .product-count-24 {
+            color: #666;
+        }
+        
+        .golden-zone-table .product-count-25 {
+            font-weight: bold;
+            color: #1976d2;
+        }
+        
+        .golden-zone-table .product-count-change-positive {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        
+        .golden-zone-table .product-count-change-negative {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        
+        .golden-zone-table .product-count-change-zero {
+            color: #666;
+        }
+        
+        /* 푸터 */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+        
+        .footer .version {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* 맨 위로 버튼 */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow-hover);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            z-index: 1000;
+        }
+        
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-4px);
+        }
+        
+        /* 반응형 */
+        @media (max-width: 1024px) {
+            .ai-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .best-products {
+                grid-template-columns: 1fr;
+            }
+            
+            .best-products .best-card:nth-child(3) {
+                grid-column: auto;
+            }
+            
+            .sell-rate-card .compact-table .product-name {
+                max-width: none;
+            }
+            
+            .kpi-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .kpi-card .kpi-metric-value,
+            .kpi-card .kpi-value,
+            .kpi-card .value {
+                font-size: 22px;
+            }
+            
+            .kpi-card .unit {
+                font-size: 12px;
+            }
+            
+            .kpi-divider {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .best-products {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-table {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-table .left-section {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .kpi-card .kpi-metric-value,
+            .kpi-card .kpi-value,
+            .kpi-card .value {
+                font-size: 20px;
+            }
+            
+            .kpi-card .unit {
+                font-size: 11px;
+            }
+            
+            .kpi-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .kpi-card .value {
+                font-size: 2.2rem;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+            
+            body {
+                padding: 12px;
+            }
+            
+            .section {
+                padding: 20px;
+                border-radius: 12px;
+            }
+            
+            .table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 헤더 -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-space">📊</div>
+            <h1>DUVETICA Weekly Sales Dashboard</h1>
+            <p class="subtitle">Week 36 ~ Week 47 (25FW vs 24FW) Analysis Report</p>
+        </div>
+    </div>
+    
+    <!-- AI 분석 섹션 -->
+    <div class="ai-section">
+        <div class="ai-box insight animate-delay-1">
+            <h3><span class="icon">✅</span>핵심 인사이트 (잘된 점)</h3>
+            <ul id="ai-insights">
+                <li>데이터 분석 중...</li>
+            </ul>
+        </div>
+        
+        <div class="ai-box warning animate-delay-2">
+            <h3><span class="icon">⚠️</span>주의사항 (개선 필요)</h3>
+            <ul id="ai-warnings">
+                <li>데이터 분석 중...</li>
+            </ul>
+        </div>
+        
+        <div class="ai-box action animate-delay-3">
+            <h3><span class="icon">🎯</span>향후 실행 계획 (Action Items)</h3>
+            <ul id="ai-actions">
+                <li>데이터 분석 중...</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- KPI 카드 (2x3 그리드) -->
+    <div class="kpi-cards" id="kpiCards">
+        <!-- KPI 카드는 JavaScript로 동적 생성 -->
+        <div style="text-align:center; padding:40px; color:#888;">KPI 데이터 로딩중...</div>
+    </div>
+    
+    <!-- BEST 제품 순위 -->
+    <div class="best-products">
+        <div class="best-card animate-delay-1">
+            <h3><span class="emoji">🏆</span>Top 10 매출 제품 (25FW)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">순위</th>
+                        <th>제품명</th>
+                        <th>성별</th>
+                        <th>카테고리</th>
+                        <th>Fabric × Length × Downweight</th>
+                        <th style="text-align:right">매출액</th>
+                        <th style="text-align:right">판매수량</th>
+                    </tr>
+                </thead>
+                <tbody>
+        <tr>
+            <td class="rank-cell medal-gold">🥇</td>
+            <td class="product-name">알로로 벨벳</td>
+            <td><span class="gender-badge women">여성</span></td>
+            <td><span class="category-badge">DOWN</span></td>
+            <td class="spec-cell">Textured × Middle × Heavy</td>
+            <td class="number-cell">722.3</td>
+            <td class="number-cell">595</td>
+        </tr>
+        <tr>
+            <td class="rank-cell medal-silver">🥈</td>
+            <td class="product-name">에우리피데 벨벳</td>
+            <td><span class="gender-badge women">여성</span></td>
+            <td><span class="category-badge">DOWN</span></td>
+            <td class="spec-cell">Textured × Middle × Light</td>
+            <td class="number-cell">351.4</td>
+            <td class="number-cell">353</td>
+        </tr>
+        <tr>
+            <td class="rank-cell medal-bronze">🥉</td>
+            <td class="product-name">소바라</td>
+            <td><span class="gender-badge women">여성</span></td>
+            <td><span class="category-badge">DOWN</span></td>
+            <td class="spec-cell">Shiny × Long × Medium</td>
+            <td class="number-cell">344.4</td>
+            <td class="number-cell">290</td>
+        </tr>
+        <tr>
+            <td class="rank-cell">4</td>
+            <td class="product-name">토리사 벨벳</td>
+            <td><span class="gender-badge women">여성</span></td>
+            <td><span class="category-badge">DOWN</span></td>
+            <td class="spec-cell">Textured × Short × Heavy</td>
+            <td class="number-cell">241.6</td>
+            <td class="number-cell">206</td>
+        </tr>
+        <tr>
+            <td class="rank-cell">5</td>
+            <td class="product-name">알로로</td>
+            <td><span class="gender-badge women">여성</span></td>
+            <td><span class="category-badge">DOWN</span></td>
+            <td class="spec-cell">Shiny × Middle × Heavy</td>
+            <td class="number-cell">178.1</td>
+            <td class="number-cell">152</td>
+        </tr>
+        <tr>
+            <td class="rank-cell">6</td>
+            <td class="product-name">리아노리 K</td>
+            <td><span class="gender-badge women">여성</span></td>
+            <td><span class="category-badge">DOWN</span></td>
+            <td class="spec-cell">Semi-Shiny × Long × Light</td>
+            <td class="number-cell">156.8</td>
+            <td class="number-cell">135</td>
+        </tr>
+        <tr>
+            <td class="rank-cell">7</td>
+            <td class="product-name">라바로네</td>
+            <td><span class="gender-badge women">여성</span></td>
+            <td><span class="category-badge">DOWN</span></td>
+            <td class="spec-cell">Soft-Matte × Long × Heavy</td>
+            <td class="number-cell">139.5</td>
+            <td class="number-cell">103</td>
+        </tr>
+        <tr>
+            <td class="rank-cell">8</td>
+            <td class="product-name">에우리피데</td>
+            <td><span class="gender-badge women">여성</span></td>
+            <td><span class="category-badge">DOWN</span></td>
+            <td class="spec-cell">Shiny × Middle × Light</td>
+            <td class="number-cell">136.6</td>
+            <td class="number-cell">136</td>
+        </tr>
+        <tr>
+            <td class="rank-cell">9</td>
+            <td class="product-name">콜레다라</td>
+            <td><span class="gender-badge women">여성</span></td>
+            <td><span class="category-badge">DOWN</span></td>
+            <td class="spec-cell">Soft-Matte × Middle × Light</td>
+            <td class="number-cell">133.1</td>
+            <td class="number-cell">146</td>
+        </tr>
+        <tr>
+            <td class="rank-cell">10</td>
+            <td class="product-name">마라테아 미드</td>
+            <td><span class="gender-badge women">여성</span></td>
+            <td><span class="category-badge">DOWN</span></td>
+            <td class="spec-cell">Soft-Matte × Middle × Heavy</td>
+            <td class="number-cell">127.2</td>
+            <td class="number-cell">100</td>
+        </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="best-card animate-delay-2 sell-rate-card">
+            <h3><span class="emoji">🔥</span>Top 10 판매율 제품 (25FW)</h3>
+            <table class="compact-table">
+                <thead>
+                    <tr>
+                        <th style="text-align:center">순위</th>
+                        <th>제품명</th>
+                        <th style="text-align:right">판매율</th>
+                        <th style="text-align:center">상태</th>
+                    </tr>
+                </thead>
+                <tbody id="bestSellRateTableBody">
+                    <tr><td colspan="4" style="text-align:center; padding:20px;">데이터 로딩 중...</td></tr>
+                </tbody>
+            </table>
+    </div>
+    
+        <div class="best-card animate-delay-3">
+            <h3><span class="emoji">🚀</span>판매량 급상승 상품 Top 10 (전주 대비 판매 증감)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">순위</th>
+                        <th>제품명</th>
+                        <th>성별</th>
+                        <th>카테고리</th>
+                        <th style="text-align:right">전주</th>
+                        <th style="text-align:right">금주</th>
+                        <th style="text-align:right">전주 대비</th>
+                        <th style="text-align:right" title="시즌 전체 판매율">누적 판매율</th>
+                    </tr>
+                </thead>
+                <tbody id="trendingBody">
+                    <tr><td colspan="8" style="text-align:center; padding:20px;">데이터 로딩 중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- 주차별 매출 그래프 -->
+    <div class="section">
+        <div class="section-header">
+            <h3><span class="emoji">📈</span>주차별 매출 추이</h3>
+        </div>
+        <div class="chart-container">
+            <canvas id="weeklyChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- 카테고리 매출 테이블 -->
+    <div class="section">
+        <div class="section-header">
+            <h3><span class="emoji">📊</span>카테고리별 매출 분석 <span class="unit-note">(단위: 백만원 / 장)</span></h3>
+        </div>
+        <div class="table-wrapper">
+            <table id="categoryTable" class="two-row-header compact-table category-table">
+                <thead>
+                    <tr class="header-row-1">
+                        <th rowspan="2" data-sort="category">카테고리</th>
+                        <th colspan="3" class="group-header">매출</th>
+                        <th colspan="3" class="group-header">판매수량</th>
+                        <th colspan="3" class="group-header">입고금액</th>
+                        <th colspan="3" class="group-header">판매율</th>
+                    </tr>
+                    <tr class="header-row-2">
+                        <th data-sort="sales24" style="text-align:right">24FW</th>
+                        <th data-sort="sales25" style="text-align:right">25FW</th>
+                        <th data-sort="growth" style="text-align:right">성장률</th>
+                        <th data-sort="qty24" style="text-align:right">24FW</th>
+                        <th data-sort="qty25" style="text-align:right">25FW</th>
+                        <th data-sort="qtydiff" style="text-align:right">증감</th>
+                        <th data-sort="intag24" style="text-align:right">24FW</th>
+                        <th data-sort="intag25" style="text-align:right">25FW</th>
+                        <th data-sort="intaggrowth" style="text-align:right">성장률</th>
+                        <th data-sort="rate24" style="text-align:right">24FW</th>
+                        <th data-sort="rate25" style="text-align:right">25FW</th>
+                        <th data-sort="ratechange" style="text-align:right">변화</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+        <tr class="total-row" data-sales24="2524674030" data-sales25="5952016840" data-growth="135.7538743328381" data-qty24="4409" data-qty25="8642" data-intag24="19804815000" data-intag25="33332775000" data-rate24="14.776229921864962" data-rate25="19.812190854196807" data-ratechange="5.035960932331845">
+            <td class="category-cell">TOTAL</td>
+            <td class="number-cell">2,525</td>
+            <td class="number-cell">5,952</td>
+            <td class="number-cell positive">+135.8%</td>
+            <td class="number-cell">4,409</td>
+            <td class="number-cell">8,642</td>
+            <td class="number-cell positive">+4,233</td>
+            <td class="number-cell">19,805</td>
+            <td class="number-cell">33,333</td>
+            <td class="number-cell positive">+68.3%</td>
+            <td class="number-cell">14.8%</td>
+            <td class="number-cell">19.8%</td>
+            <td class="number-cell positive">+5.0%p</td>
+        </tr>
+        <tr class="parent-row women-row" data-sales24="2060759180" data-sales25="5205485490" data-growth="152.60037856534018" data-qty24="3095" data-qty25="6825" data-intag24="12978367000" data-intag25="24003150000" data-rate24="18.36006024486748" data-rate25="24.082172548186385" data-ratechange="5.722112303318905">
+            <td class="category-cell">WOMEN</td>
+            <td class="number-cell">2,061</td>
+            <td class="number-cell">5,205</td>
+            <td class="number-cell positive">+152.6%</td>
+            <td class="number-cell">3,095</td>
+            <td class="number-cell">6,825</td>
+            <td class="number-cell positive">+3,730</td>
+            <td class="number-cell">12,978</td>
+            <td class="number-cell">24,003</td>
+            <td class="number-cell positive">+85.0%</td>
+            <td class="number-cell">18.4%</td>
+            <td class="number-cell">24.1%</td>
+            <td class="number-cell positive">+5.7%p</td>
+        </tr>
+        <tr class="sub-row women-sub-row highlight-row" data-sales24="1461827580" data-sales25="4226518320" data-growth="189.12563819599026" data-qty24="1427" data-qty25="3818" data-intag24="8953920000" data-intag25="17572850000" data-rate24="18.94734373324756" data-rate25="26.6434869699565" data-ratechange="7.696143236708938">
+            <td class="category-cell"><span class="indent"></span>⭐ DOWN</td>
+            <td class="number-cell">1,462</td>
+            <td class="number-cell">4,227</td>
+            <td class="number-cell positive">+189.1%</td>
+            <td class="number-cell">1,427</td>
+            <td class="number-cell">3,818</td>
+            <td class="number-cell positive">+2,391</td>
+            <td class="number-cell">8,954</td>
+            <td class="number-cell">17,573</td>
+            <td class="number-cell positive">+96.3%</td>
+            <td class="number-cell">18.9%</td>
+            <td class="number-cell">26.6%</td>
+            <td class="number-cell positive">+7.7%p</td>
+        </tr>
+        <tr class="sub-row women-sub-row" data-sales24="313920500" data-sales25="320965850" data-growth="2.244310263267292" data-qty24="469" data-qty25="553" data-intag24="1647910000" data-intag25="2045150000" data-rate24="21.762717624142095" data-rate25="17.834877637337115" data-ratechange="-3.9278399868049796">
+            <td class="category-cell"><span class="indent"></span>OUTER</td>
+            <td class="number-cell">314</td>
+            <td class="number-cell">321</td>
+            <td class="number-cell neutral">+2.2%</td>
+            <td class="number-cell">469</td>
+            <td class="number-cell">553</td>
+            <td class="number-cell positive">+84</td>
+            <td class="number-cell">1,648</td>
+            <td class="number-cell">2,045</td>
+            <td class="number-cell positive">+24.1%</td>
+            <td class="number-cell">21.8%</td>
+            <td class="number-cell">17.8%</td>
+            <td class="number-cell negative">-3.9%p</td>
+        </tr>
+        <tr class="sub-row women-sub-row" data-sales24="131856290" data-sales25="165636230" data-growth="25.618755085555645" data-qty24="595" data-qty25="536" data-intag24="922320000" data-intag25="1442270000" data-rate24="16.54306531355712" data-rate25="12.86998966906335" data-ratechange="-3.6730756444937676">
+            <td class="category-cell"><span class="indent"></span>TOP</td>
+            <td class="number-cell">132</td>
+            <td class="number-cell">166</td>
+            <td class="number-cell positive">+25.6%</td>
+            <td class="number-cell">595</td>
+            <td class="number-cell">536</td>
+            <td class="number-cell negative">-59</td>
+            <td class="number-cell">922</td>
+            <td class="number-cell">1,442</td>
+            <td class="number-cell positive">+56.4%</td>
+            <td class="number-cell">16.5%</td>
+            <td class="number-cell">12.9%</td>
+            <td class="number-cell negative">-3.7%p</td>
+        </tr>
+        <tr class="sub-row women-sub-row" data-sales24="77654970" data-sales25="258939700" data-growth="233.44897306637296" data-qty24="262" data-qty25="882" data-intag24="738670000" data-intag25="1313340000" data-rate24="12.085234272408519" data-rate25="22.125268399652796" data-ratechange="10.040034127244278">
+            <td class="category-cell"><span class="indent"></span>BOTTOM</td>
+            <td class="number-cell">78</td>
+            <td class="number-cell">259</td>
+            <td class="number-cell positive">+233.4%</td>
+            <td class="number-cell">262</td>
+            <td class="number-cell">882</td>
+            <td class="number-cell positive">+620</td>
+            <td class="number-cell">739</td>
+            <td class="number-cell">1,313</td>
+            <td class="number-cell positive">+77.8%</td>
+            <td class="number-cell">12.1%</td>
+            <td class="number-cell">22.1%</td>
+            <td class="number-cell positive">+10.0%p</td>
+        </tr>
+        <tr class="parent-row men-row" data-sales24="463914850" data-sales25="746531350" data-growth="60.91990803915848" data-qty24="1314" data-qty25="1817" data-intag24="6826448000" data-intag25="9329625000" data-rate24="7.96269157840212" data-rate25="8.826431930543832" data-ratechange="0.8637403521417113">
+            <td class="category-cell">MEN</td>
+            <td class="number-cell">464</td>
+            <td class="number-cell">747</td>
+            <td class="number-cell positive">+60.9%</td>
+            <td class="number-cell">1,314</td>
+            <td class="number-cell">1,817</td>
+            <td class="number-cell positive">+503</td>
+            <td class="number-cell">6,826</td>
+            <td class="number-cell">9,330</td>
+            <td class="number-cell positive">+36.7%</td>
+            <td class="number-cell">8.0%</td>
+            <td class="number-cell">8.8%</td>
+            <td class="number-cell positive">+0.9%p</td>
+        </tr>
+        <tr class="sub-row men-sub-row" data-sales24="262694070" data-sales25="418264700" data-growth="59.221218811677026" data-qty24="305" data-qty25="441" data-intag24="4001040000" data-intag25="4724090000" data-rate24="7.746735848679344" data-rate25="9.739230200948754" data-ratechange="1.9924943522694099">
+            <td class="category-cell"><span class="indent"></span>DOWN</td>
+            <td class="number-cell">263</td>
+            <td class="number-cell">418</td>
+            <td class="number-cell positive">+59.2%</td>
+            <td class="number-cell">305</td>
+            <td class="number-cell">441</td>
+            <td class="number-cell positive">+136</td>
+            <td class="number-cell">4,001</td>
+            <td class="number-cell">4,724</td>
+            <td class="number-cell positive">+18.1%</td>
+            <td class="number-cell">7.7%</td>
+            <td class="number-cell">9.7%</td>
+            <td class="number-cell positive">+2.0%p</td>
+        </tr>
+        <tr class="sub-row men-sub-row" data-sales24="34172500" data-sales25="66917640" data-growth="95.82307410929842" data-qty24="71" data-qty25="151" data-intag24="738000000" data-intag25="1349980000" data-rate24="5.373983739837398" data-rate25="5.701565949125173" data-ratechange="0.32758220928777426">
+            <td class="category-cell"><span class="indent"></span>OUTER</td>
+            <td class="number-cell">34</td>
+            <td class="number-cell">67</td>
+            <td class="number-cell positive">+95.8%</td>
+            <td class="number-cell">71</td>
+            <td class="number-cell">151</td>
+            <td class="number-cell positive">+80</td>
+            <td class="number-cell">738</td>
+            <td class="number-cell">1,350</td>
+            <td class="number-cell positive">+82.9%</td>
+            <td class="number-cell">5.4%</td>
+            <td class="number-cell">5.7%</td>
+            <td class="number-cell positive">+0.3%p</td>
+        </tr>
+        <tr class="sub-row men-sub-row" data-sales24="47981120" data-sales25="58488170" data-growth="21.898300831660453" data-qty24="275" data-qty25="230" data-intag24="804210000" data-intag25="831880000" data-rate24="7.26551522612253" data-rate25="7.86651920950137" data-ratechange="0.6010039833788401">
+            <td class="category-cell"><span class="indent"></span>TOP</td>
+            <td class="number-cell">48</td>
+            <td class="number-cell">58</td>
+            <td class="number-cell positive">+21.9%</td>
+            <td class="number-cell">275</td>
+            <td class="number-cell">230</td>
+            <td class="number-cell negative">-45</td>
+            <td class="number-cell">804</td>
+            <td class="number-cell">832</td>
+            <td class="number-cell positive">+3.4%</td>
+            <td class="number-cell">7.3%</td>
+            <td class="number-cell">7.9%</td>
+            <td class="number-cell positive">+0.6%p</td>
+        </tr>
+        <tr class="sub-row men-sub-row" data-sales24="14979000" data-sales25="39673370" data-growth="164.859937245477" data-qty24="63" data-qty25="151" data-intag24="337670000" data-intag25="624560000" data-rate24="5.194420588148192" data-rate25="7.129819392852569" data-ratechange="1.9353988047043762">
+            <td class="category-cell"><span class="indent"></span>BOTTOM</td>
+            <td class="number-cell">15</td>
+            <td class="number-cell">40</td>
+            <td class="number-cell positive">+164.9%</td>
+            <td class="number-cell">63</td>
+            <td class="number-cell">151</td>
+            <td class="number-cell positive">+88</td>
+            <td class="number-cell">338</td>
+            <td class="number-cell">625</td>
+            <td class="number-cell positive">+85.0%</td>
+            <td class="number-cell">5.2%</td>
+            <td class="number-cell">7.1%</td>
+            <td class="number-cell positive">+1.9%p</td>
+        </tr>
+        <tr class="bold-category" data-sales24="116026480" data-sales25="294206600" data-growth="153.56849574338548" data-qty24="625" data-qty25="1383" data-intag24="932925000" data-intag25="2193740000" data-rate24="14.167483988530696" data-rate25="14.806130170393939" data-ratechange="0.6386461818632423">
+            <td class="category-cell">ACC</td>
+            <td class="number-cell">116</td>
+            <td class="number-cell">294</td>
+            <td class="number-cell positive">+153.6%</td>
+            <td class="number-cell">625</td>
+            <td class="number-cell">1,383</td>
+            <td class="number-cell positive">+758</td>
+            <td class="number-cell">933</td>
+            <td class="number-cell">2,194</td>
+            <td class="number-cell positive">+135.2%</td>
+            <td class="number-cell">14.2%</td>
+            <td class="number-cell">14.8%</td>
+            <td class="number-cell positive">+0.6%p</td>
+        </tr>
+        <tr class="bold-category" data-sales24="63561520" data-sales25="102406260" data-growth="61.11361087651774" data-qty24="317" data-qty25="497" data-intag24="728150000" data-intag25="1234915000" data-rate24="9.839044152990455" data-rate25="8.838260123166371" data-ratechange="-1.000784029824084">
+            <td class="category-cell">SHOES</td>
+            <td class="number-cell">64</td>
+            <td class="number-cell">102</td>
+            <td class="number-cell positive">+61.1%</td>
+            <td class="number-cell">317</td>
+            <td class="number-cell">497</td>
+            <td class="number-cell positive">+180</td>
+            <td class="number-cell">728</td>
+            <td class="number-cell">1,235</td>
+            <td class="number-cell positive">+69.6%</td>
+            <td class="number-cell">9.8%</td>
+            <td class="number-cell">8.8%</td>
+            <td class="number-cell negative">-1.0%p</td>
+        </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Women Down 상세 분석 -->
+    <div class="section">
+        <div class="section-header detail-header" onclick="toggleDetail()">
+            <h3><span class="emoji">👗</span>Women Down 상세 분석</h3>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="detail-tables" id="detailTables">
+            <div class="detail-table">
+                <div class="left-section">
+                    <h4>🎨 Fabric 분석</h4>
+                    <div class="ai-insights">
+                        <div class="insights-positive">
+                            <p>✅ <strong>TEXTURED</strong> 매출 1위 (1,666백만원) + 고효율 (<span class="positive">+17.1%p</span>)</p>
+                            <p>✅ <strong>SHINY</strong> 고효율 (매출 23.1% vs 입고 6.4%, <span class="positive">+16.7%p</span>)</p>
+                            <p>💡 <strong>SOFT-MATTE</strong> 급성장 (+769.9%) - 입고 확대 우선 검토</p>
+                        </div>
+                        <div class="insights-warnings">
+                            <p class="warning">⚠️ <strong>SOFT-MATTE</strong> 저효율 (입고 36.4% 대비 매출 29.9%, <span class="negative">-6.5%p</span>)</p>
+                            <p class="danger">🚨 <strong>MATTE</strong> 매출 하락 (-54.8%) + 저효율 - 입고 축소 권고</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <h4>📊 입고 대비 매출 효율 분석</h4>
+                <table>
+                    <thead>
+                        <tr>
+                                <th rowspan="2">속성</th>
+                                <th colspan="2">매출 (백만원)</th>
+                                <th rowspan="2">성장률</th>
+                                <th colspan="3">25FW 효율 분석 (%)</th>
+                            </tr>
+                            <tr>
+                                <th>24FW</th>
+                                <th>25FW</th>
+                                <th>매출비중</th>
+                                <th>입고비중</th>
+                                <th>효율차이</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        <tr>
+            <td><strong>TEXTURED</strong></td>
+                                <td>396</td>
+                                <td>1,666</td>
+                                <td class="positive">+320.9%</td>
+                                <td>39.4%</td>
+                                <td>22.3%</td>
+                                <td class="efficiency-high">+17.1%p ✅</td>
+        </tr>
+        <tr>
+            <td><strong>SOFT-MATTE</strong></td>
+                                <td>145</td>
+                                <td>1,263</td>
+                                <td class="positive">+769.9%</td>
+                                <td>29.9%</td>
+                                <td>36.4%</td>
+                                <td class="efficiency-low">-6.5%p ⚠️</td>
+        </tr>
+        <tr>
+            <td><strong>SHINY</strong></td>
+                                <td>612</td>
+                                <td>976</td>
+                                <td class="positive">+59.6%</td>
+                                <td>23.1%</td>
+                                <td>6.4%</td>
+                                <td class="efficiency-high">+16.7%p ✅</td>
+        </tr>
+        <tr>
+            <td><strong>SEMI-SHINY</strong></td>
+                                <td>202</td>
+                                <td>273</td>
+                                <td class="positive">+35.5%</td>
+                                <td>6.5%</td>
+                                <td>3.8%</td>
+                                <td class="efficiency-high">+2.7%p ✅</td>
+        </tr>
+        <tr>
+            <td><strong>MATTE</strong></td>
+                                <td>108</td>
+                                <td>49</td>
+                                <td class="negative">-54.8%</td>
+                                <td>1.2%</td>
+                                <td>31.1%</td>
+                                <td class="efficiency-low">-29.9%p ⚠️</td>
+        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            
+            <div class="detail-table">
+                <div class="left-section">
+                    <h4>📏 Length 분석</h4>
+                    <div class="ai-insights">
+                        <div class="insights-positive">
+                            <p>✅ <strong>MIDDLE</strong> 매출 1위 (2,167백만원) + 고효율 (<span class="positive">+10.4%p</span>)</p>
+                            <p>✅ <strong>LONG</strong> 고효율 (매출 24.4% vs 입고 19.5%, <span class="positive">+4.9%p</span>)</p>
+                            <p>💡 <strong>SHORT</strong> 최고 성장률 (+550.5%) - 트렌드 상승</p>
+                        </div>
+                        <div class="insights-warnings">
+                            <p class="warning">⚠️ <strong>SHORT</strong> 저효율 (입고 39.6% 대비 매출 24.3%, <span class="negative">-15.3%p</span>)</p>
+                            <p class="danger">🚨 SHORT 입고 과다 - 판매 촉진 또는 입고 조정 필요</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <h4>📊 입고 대비 매출 효율 분석</h4>
+                <table>
+                    <thead>
+                        <tr>
+                                <th rowspan="2">속성</th>
+                                <th colspan="2">매출 (백만원)</th>
+                                <th rowspan="2">성장률</th>
+                                <th colspan="3">25FW 효율 분석 (%)</th>
+                            </tr>
+                            <tr>
+                                <th>24FW</th>
+                                <th>25FW</th>
+                                <th>매출비중</th>
+                                <th>입고비중</th>
+                                <th>효율차이</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        <tr>
+            <td><strong>MIDDLE</strong></td>
+                                <td>455</td>
+                                <td>2,167</td>
+                                <td class="positive">+375.8%</td>
+                                <td>51.3%</td>
+                                <td>40.9%</td>
+                                <td class="efficiency-high">+10.4%p ✅</td>
+        </tr>
+        <tr>
+            <td><strong>LONG</strong></td>
+                                <td>543</td>
+                                <td>1,032</td>
+                                <td class="positive">+90.0%</td>
+                                <td>24.4%</td>
+                                <td>19.5%</td>
+                                <td class="efficiency-high">+4.9%p ✅</td>
+        </tr>
+        <tr>
+            <td><strong>SHORT</strong></td>
+                                <td>158</td>
+                                <td>1,028</td>
+                                <td class="positive">+550.5%</td>
+                                <td>24.3%</td>
+                                <td>39.6%</td>
+                                <td class="efficiency-low">-15.3%p ⚠️</td>
+        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            
+            <div class="detail-table">
+                <div class="left-section">
+                    <h4>⚖️ Downweight 분석</h4>
+                    <div class="ai-insights">
+                        <div class="insights-positive">
+                            <p>✅ <strong>HEAVY</strong> 매출 1위 (2,176백만원) + 최고효율 (<span class="positive">+24.5%p</span>)</p>
+                            <p>✅ <strong>LIGHT</strong> 균형 (매출 33.4% ≈ 입고 29.8%, <span class="positive">+3.6%p</span>)</p>
+                            <p>💡 <strong>HEAVY</strong> 프리미엄 라인 - 입고 확대 적극 권고</p>
+                        </div>
+                        <div class="insights-warnings">
+                            <p class="warning">⚠️ <strong>MEDIUM</strong> 저효율 (입고 43.2% 대비 매출 15.1%, <span class="negative">-28.1%p</span>)</p>
+                            <p class="danger">🚨 MEDIUM 입고 과다 - 대폭 축소 또는 판촉 필요</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <h4>📊 입고 대비 매출 효율 분석</h4>
+                <table>
+                    <thead>
+                        <tr>
+                                <th rowspan="2">속성</th>
+                                <th colspan="2">매출 (백만원)</th>
+                                <th rowspan="2">성장률</th>
+                                <th colspan="3">25FW 효율 분석 (%)</th>
+                            </tr>
+                            <tr>
+                                <th>24FW</th>
+                                <th>25FW</th>
+                                <th>매출비중</th>
+                                <th>입고비중</th>
+                                <th>효율차이</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        <tr>
+            <td><strong>HEAVY</strong></td>
+                                <td>551</td>
+                                <td>2,176</td>
+                                <td class="positive">+295.2%</td>
+                                <td>51.5%</td>
+                                <td>27.0%</td>
+                                <td class="efficiency-high">+24.5%p ✅</td>
+        </tr>
+        <tr>
+            <td><strong>LIGHT</strong></td>
+                                <td>582</td>
+                                <td>1,413</td>
+                                <td class="positive">+142.9%</td>
+                                <td>33.4%</td>
+                                <td>29.8%</td>
+                                <td class="efficiency-high">+3.6%p ✅</td>
+        </tr>
+        <tr>
+            <td><strong>MEDIUM</strong></td>
+                                <td>330</td>
+                                <td>638</td>
+                                <td class="positive">+93.5%</td>
+                                <td>15.1%</td>
+                                <td>43.2%</td>
+                                <td class="efficiency-low">-28.1%p ⚠️</td>
+        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Golden Zone 분석 -->
+        <div class="golden-zone" id="goldenZone">
+            <h4>🏆 Golden Zone 분석 (Fabric × Length × Downweight)</h4>
+            <p class="subtitle">가장 효율이 높은 조합 TOP 10 (조합별 전체 제품 합계 기준)</p>
+            
+            <!-- AI 인사이트 카드 -->
+            <div class="golden-zone-insight-card">
+                <h4>AI 심층 인사이트</h4>
+                <div id="goldenZoneInsights" class="insight-content">
+                    <p>데이터 분석 중...</p>
+                </div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table id="goldenZoneTable" class="golden-zone-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="width:50px">순위</th>
+                            <th rowspan="2">조합<br>(Fabric × Length × Downweight)</th>
+                            <th colspan="3">상품 수</th>
+                            <th colspan="2">매출 (백만원)</th>
+                            <th rowspan="2">성장률</th>
+                            <th colspan="2">판매율 (%)</th>
+                            <th rowspan="2">판매율<br>변화</th>
+                            <th rowspan="2">효율<br>점수</th>
+                        </tr>
+                        <tr>
+                            <th>24FW</th>
+                            <th>25FW</th>
+                            <th>증감</th>
+                            <th>24FW</th>
+                            <th>25FW</th>
+                            <th>24FW</th>
+                            <th>25FW</th>
+                        </tr>
+                    </thead>
+                    <tbody id="goldenZoneBody">
+                        <tr><td colspan="12" style="text-align:center; padding:20px;">데이터 로딩 중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 푸터 -->
+    <div class="footer">
+        <p>Generated at <strong>2025-11-27 19:57:19</strong> | <span class="version">DUVETICA Weekly Sales Dashboard</span></p>
+        <p>Data Period: Week 36 ~ Week 47 | Source: 24FW & 25FW Sales Data</p>
+    </div>
+    
+    <!-- 맨 위로 버튼 -->
+    <button class="scroll-top" onclick="scrollToTop()" id="scrollTopBtn">↑</button>
+    
+    <script>
+        // 주차별 매출 차트 (애니메이션 강화)
+        const ctx = document.getElementById('weeklyChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['36w', '37w', '38w', '39w', '40w', '41w', '42w', '43w', '44w', '45w', '46w', '47w'],
+                datasets: [
+                    {
+                        label: '24FW',
+                        data: [47690500, 68539500, 60311200, 72769000, 122251700, 113146300, 140828850, 163394900, 187805530, 358398170, 380359430, 462369650],
+                        borderColor: '#95a5a6',
+                        backgroundColor: 'rgba(149, 165, 166, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#95a5a6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    },
+                    {
+                        label: '25FW',
+                        data: [46161400, 103305170, 139124550, 135830600, 141686710, 240697550, 294099200, 544203130, 881987710, 859142550, 887360090, 1160302990],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.15)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#3498db',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                family: "'Inter', sans-serif",
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                        titleFont: { family: "'Inter', sans-serif", size: 13, weight: '600' },
+                        bodyFont: { family: "'JetBrains Mono', monospace", size: 12 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                const value = (context.raw / 1000000).toFixed(0);
+                                return context.dataset.label + ': ' + value + '백만원';
+                            },
+                            afterBody: function(tooltipItems) {
+                                if (tooltipItems.length >= 2) {
+                                    const val24 = tooltipItems[0].raw;
+                                    const val25 = tooltipItems[1].raw;
+                                    const growth = ((val25 - val24) / val24 * 100).toFixed(1);
+                                    return '\n성장률: ' + (growth > 0 ? '+' : '') + growth + '%';
+                                }
+                                return '';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return (value / 1000000) + '백만';
+                            },
+                            font: { family: "'JetBrains Mono', monospace", size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { family: "'Inter', sans-serif", size: 11 }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 테이블 정렬 기능
+        document.querySelectorAll('#categoryTable th[data-sort]').forEach(th => {
+            th.addEventListener('click', function() {
+                const table = this.closest('table');
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                const sortKey = this.dataset.sort;
+                const isAsc = this.classList.contains('sorted-asc');
+                
+                // 정렬 클래스 초기화
+                table.querySelectorAll('th').forEach(h => h.classList.remove('sorted', 'sorted-asc', 'sorted-desc'));
+                this.classList.add('sorted', isAsc ? 'sorted-desc' : 'sorted-asc');
+                
+                // 정렬 로직
+                rows.sort((a, b) => {
+                    let aVal, bVal;
+                    switch(sortKey) {
+                        case 'category':
+                            aVal = a.cells[0].textContent.trim();
+                            bVal = b.cells[0].textContent.trim();
+                            break;
+                        case 'sales24':
+                            aVal = parseFloat(a.dataset.sales24) || 0;
+                            bVal = parseFloat(b.dataset.sales24) || 0;
+                            break;
+                        case 'sales25':
+                            aVal = parseFloat(a.dataset.sales25) || 0;
+                            bVal = parseFloat(b.dataset.sales25) || 0;
+                            break;
+                        case 'growth':
+                            aVal = parseFloat(a.dataset.growth) || 0;
+                            bVal = parseFloat(b.dataset.growth) || 0;
+                            break;
+                        case 'qty24':
+                            aVal = parseFloat(a.dataset.qty24) || 0;
+                            bVal = parseFloat(b.dataset.qty24) || 0;
+                            break;
+                        case 'qty25':
+                            aVal = parseFloat(a.dataset.qty25) || 0;
+                            bVal = parseFloat(b.dataset.qty25) || 0;
+                            break;
+                        case 'rate24':
+                            aVal = parseFloat(a.dataset.rate24) || 0;
+                            bVal = parseFloat(b.dataset.rate24) || 0;
+                            break;
+                        case 'rate25':
+                            aVal = parseFloat(a.dataset.rate25) || 0;
+                            bVal = parseFloat(b.dataset.rate25) || 0;
+                            break;
+                        case 'ratechange':
+                            aVal = parseFloat(a.dataset.ratechange) || 0;
+                            bVal = parseFloat(b.dataset.ratechange) || 0;
+                            break;
+                        case 'intag24':
+                            aVal = parseFloat(a.dataset.intag24) || 0;
+                            bVal = parseFloat(b.dataset.intag24) || 0;
+                            break;
+                        case 'intag25':
+                            aVal = parseFloat(a.dataset.intag25) || 0;
+                            bVal = parseFloat(b.dataset.intag25) || 0;
+                            break;
+                    }
+                    if (typeof aVal === 'string') {
+                        return isAsc ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+                    }
+                    return isAsc ? bVal - aVal : aVal - bVal;
+                });
+                
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Women Down 접기/펴기
+        function toggleDetail() {
+            const tables = document.getElementById('detailTables');
+            const header = document.querySelector('.detail-header');
+            tables.classList.toggle('collapsed');
+            header.classList.toggle('collapsed');
+        }
+        
+        // 맨 위로 버튼
+        const scrollBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                scrollBtn.classList.add('visible');
+            } else {
+                scrollBtn.classList.remove('visible');
+            }
+        });
+        
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // KPI 카운트업 애니메이션
+        function animateValue(element, start, end, duration, suffix = '') {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+                const current = Math.floor(easeProgress * (end - start) + start);
+                element.textContent = current.toLocaleString() + suffix;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // 페이지 로드 시 KPI 애니메이션 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            const kpiValues = document.querySelectorAll('.kpi-card .value');
+            kpiValues.forEach(el => {
+                const text = el.textContent;
+                if (text.includes('M')) {
+                    const num = parseInt(text.replace(/[^0-9]/g, ''));
+                    el.textContent = '0M';
+                    setTimeout(() => animateValue(el, 0, num, 1500, 'M'), 300);
+                } else if (text.includes('%')) {
+                    const num = parseFloat(text);
+                    el.textContent = '0%';
+                    setTimeout(() => {
+                        animateValue(el, 0, Math.floor(num), 1500, '');
+                        setTimeout(() => el.textContent = num.toFixed(1) + '%', 1500);
+                    }, 300);
+                }
+            });
+            
+            // Golden Zone 데이터 로드
+            loadGoldenZone();
+            
+            // 급상승 상품 데이터 로드
+            loadTrendingProducts();
+            
+            // TOP 10 판매율 제품 데이터 로드
+            loadBestSellRate();
+            
+            // KPI 요약 데이터 로드
+            loadKpiSummary();
+        });
+        
+        // Golden Zone 인라인 데이터 (fetch 실패 시 폴백용)
+        const goldenZoneData = [
+            {rank:1,combination:'TEXTURED × MIDDLE × HEAVY',productCount24:0,productCount25:1,productCountChange:1,sell_amount_24:0,sell_amount_25:722.3,growth_rate:100.0,sell_rate_24:0.0,sell_rate_25:113.5,sell_rate_change:113.5,efficiency_score:456.52},
+            {rank:2,combination:'TEXTURED × SHORT × HEAVY',productCount24:2,productCount25:4,productCountChange:2,sell_amount_24:105.5,sell_amount_25:540.9,growth_rate:412.6,sell_rate_24:36.7,sell_rate_25:26.3,sell_rate_change:-10.4,efficiency_score:296.36},
+            {rank:3,combination:'TEXTURED × MIDDLE × LIGHT',productCount24:1,productCount25:1,productCountChange:0,sell_amount_24:89.8,sell_amount_25:351.4,growth_rate:291.2,sell_rate_24:92.5,sell_rate_25:85.3,sell_rate_change:-7.2,efficiency_score:217.21},
+            {rank:4,combination:'SOFT-MATTE × MIDDLE × LIGHT',productCount24:0,productCount25:3,productCountChange:3,sell_amount_24:0,sell_amount_25:348.5,growth_rate:100.0,sell_rate_24:0.0,sell_rate_25:42.6,sell_rate_change:42.6,efficiency_score:214.72},
+            {rank:5,combination:'SOFT-MATTE × SHORT × HEAVY',productCount24:2,productCount25:2,productCountChange:0,sell_amount_24:12.8,sell_amount_25:104.8,growth_rate:719.6,sell_rate_24:5.4,sell_rate_25:12.6,sell_rate_change:7.3,efficiency_score:196.91},
+            {rank:6,combination:'SHINY × LONG × MEDIUM',productCount24:3,productCount25:2,productCountChange:-1,sell_amount_24:202.6,sell_amount_25:375.7,growth_rate:85.4,sell_rate_24:17.9,sell_rate_25:25.5,sell_rate_change:7.6,efficiency_score:182.61},
+            {rank:7,combination:'SOFT-MATTE × LONG × HEAVY',productCount24:0,productCount25:4,productCountChange:4,sell_amount_24:0,sell_amount_25:331.2,growth_rate:100.0,sell_rate_24:0.0,sell_rate_25:16.3,sell_rate_change:16.3,efficiency_score:173.61},
+            {rank:8,combination:'SOFT-MATTE × SHORT × LIGHT',productCount24:0,productCount25:3,productCountChange:3,sell_amount_24:0,sell_amount_25:192.7,growth_rate:100.0,sell_rate_24:0.0,sell_rate_25:39.9,sell_rate_change:39.9,efficiency_score:148.99},
+            {rank:9,combination:'SHINY × MIDDLE × HEAVY',productCount24:1,productCount25:2,productCountChange:1,sell_amount_24:61.7,sell_amount_25:202.0,growth_rate:227.5,sell_rate_24:15.2,sell_rate_25:23.6,sell_rate_change:8.4,efficiency_score:141.81},
+            {rank:10,combination:'SEMI-SHINY × MIDDLE × LIGHT',productCount24:1,productCount25:1,productCountChange:0,sell_amount_24:41.2,sell_amount_25:116.6,growth_rate:183.1,sell_rate_24:32.0,sell_rate_25:41.8,sell_rate_change:9.8,efficiency_score:105.53}
+        ];
+        
+        // Golden Zone CSV 로드 및 렌더링
+        async function loadGoldenZone() {
+            try {
+                const response = await fetch('golden_zone.csv');
+                if (!response.ok) {
+                    throw new Error('HTTP error: ' + response.status);
+                }
+                const csvText = await response.text();
+                console.log('Golden Zone CSV 로드 성공');
+                
+                const rows = csvText.trim().split('\n');
+                if (rows.length < 2) {
+                    throw new Error('CSV 데이터가 비어있음');
+                }
+                
+                // CSV 컬럼: rank,combination,fabric,length,downweight,product_count_24,product_count_25,product_count_change,sell_amount_24,sell_amount_25,growth_rate,sell_rate_24,sell_rate_25,sell_rate_change,efficiency_score
+                const data = rows.slice(1).map(row => {
+                    const values = row.split(',');
+                    return {
+                        rank: parseInt(values[0]) || 0,
+                        combination: values[1] || '',
+                        productCount24: parseInt(values[5]) || 0,
+                        productCount25: parseInt(values[6]) || 0,
+                        productCountChange: parseInt(values[7]) || 0,
+                        sell_amount_24: parseFloat(values[8]) || 0,
+                        sell_amount_25: parseFloat(values[9]) || 0,
+                        growth_rate: parseFloat(values[10]) || 0,
+                        sell_rate_24: parseFloat(values[11]) || 0,
+                        sell_rate_25: parseFloat(values[12]) || 0,
+                        sell_rate_change: parseFloat(values[13]) || 0,
+                        efficiency_score: parseFloat(values[14]) || 0
+                    };
+                });
+                
+                console.log('Golden Zone 파싱 완료:', data.length + '개 행');
+                renderGoldenZone(data);
+                generateGoldenZoneInsights(data);
+            } catch (error) {
+                console.error('Golden Zone CSV 로드 실패, 인라인 데이터 사용:', error.message);
+                renderGoldenZone(goldenZoneData);
+                generateGoldenZoneInsights(goldenZoneData);
+            }
+        }
+        
+        function renderGoldenZone(data) {
+            const tbody = document.getElementById('goldenZoneBody');
+            if (!tbody) {
+                console.error('goldenZoneBody 요소를 찾을 수 없음');
+                return;
+            }
+            
+            let html = '';
+            
+            data.forEach((row, idx) => {
+                const rank = row.rank || (idx + 1);
+                let rowClasses = [];
+                let rankIcon = rank;
+                
+                // 순위별 클래스
+                if (rank === 1) { rowClasses.push('rank-1'); rankIcon = '🥇'; }
+                else if (rank === 2) { rowClasses.push('rank-2'); rankIcon = '🥈'; }
+                else if (rank === 3) { rowClasses.push('rank-3'); rankIcon = '🥉'; }
+                
+                // 효율 점수 150 이상이면 high-efficiency
+                if (row.efficiency_score >= 150) {
+                    rowClasses.push('high-efficiency');
+                }
+                
+                // 성장률 색상
+                const growthClass = row.growth_rate > 0 ? 'positive' : (row.growth_rate < 0 ? 'negative' : 'neutral');
+                const growthPrefix = row.growth_rate > 0 ? '+' : '';
+                
+                // 판매율 30% 이상이면 굵게
+                const rate24Class = row.sell_rate_24 >= 30 ? 'high-rate' : '';
+                const rate25Class = row.sell_rate_25 >= 30 ? 'high-rate' : '';
+                
+                // 판매율 변화 색상
+                const rateChangeClass = row.sell_rate_change >= 0 ? 'positive' : 'negative';
+                const rateChangePrefix = row.sell_rate_change >= 0 ? '+' : '';
+                
+                // 상품 수 변화 색상
+                const pcChangeColor = row.productCountChange > 0 ? '#2e7d32' : (row.productCountChange < 0 ? '#d32f2f' : '#666');
+                const pcChangeSign = row.productCountChange > 0 ? '+' : '';
+                
+                // 매출 포맷 (이미 백만원 단위로 저장됨)
+                const sales24M = row.sell_amount_24.toLocaleString();
+                const sales25M = row.sell_amount_25.toLocaleString();
+                
+                html += `
+                <tr class="${rowClasses.join(' ')}">
+                    <td style="text-align:center; font-size:1.1rem;">${rankIcon}</td>
+                    <td class="combo-cell">${row.combination}</td>
+                    <td class="product-count-24">${row.productCount24}개</td>
+                    <td class="product-count-25">${row.productCount25}개</td>
+                    <td style="color:${pcChangeColor}; font-weight:bold;">${pcChangeSign}${row.productCountChange}</td>
+                    <td style="text-align:right;">${sales24M}</td>
+                    <td style="text-align:right; font-weight:bold;">${sales25M}</td>
+                    <td class="number-cell ${growthClass}">${growthPrefix}${row.growth_rate.toFixed(1)}%</td>
+                    <td style="text-align:right;" class="${rate24Class}">${row.sell_rate_24.toFixed(1)}%</td>
+                    <td style="text-align:right; font-weight:bold;" class="${rate25Class}">${row.sell_rate_25.toFixed(1)}%</td>
+                    <td class="number-cell ${rateChangeClass}">${rateChangePrefix}${row.sell_rate_change.toFixed(1)}%p</td>
+                    <td class="score-cell" style="text-align:right;">${row.efficiency_score.toFixed(1)}</td>
+                </tr>`;
+            });
+            
+            tbody.innerHTML = html;
+            console.log('Golden Zone 테이블 렌더링 완료');
+        }
+        
+        // Golden Zone AI 인사이트 생성 (깔끔한 전문적 스타일)
+        function generateGoldenZoneInsights(data) {
+            const insightsDiv = document.getElementById('goldenZoneInsights');
+            if (!insightsDiv || data.length === 0) return;
+            
+            const top1 = data[0];
+            const top3 = data.slice(0, 3);
+            
+            // 총 상품 수 (24FW vs 25FW)
+            const totalProducts24 = data.reduce((sum, item) => sum + item.productCount24, 0);
+            const totalProducts25 = data.reduce((sum, item) => sum + item.productCount25, 0);
+            const totalProductChange = totalProducts25 - totalProducts24;
+            
+            // TOP 3 매출 비중
+            const top3Sales = top3.reduce((sum, item) => sum + item.sell_amount_25, 0);
+            const totalSales = data.reduce((sum, item) => sum + item.sell_amount_25, 0);
+            const top3Share = totalSales > 0 ? ((top3Sales / totalSales) * 100).toFixed(1) : 0;
+            
+            // 1위 조합 상품당 평균 매출
+            const salesPerProduct = top1.productCount25 > 0 ? 
+                (top1.sell_amount_25 / top1.productCount25).toFixed(1) : 0;
+            
+            // 신제품 추가 조합 (상품 수 증가)
+            const newProductCombos = data.filter(item => item.productCountChange > 0);
+            const newProductSales = newProductCombos.reduce((sum, item) => sum + item.sell_amount_25, 0);
+            
+            // 효율 개선 조합 (상품 수 유지/감소 but 매출 증가)
+            const efficientCombos = data.filter(item => 
+                item.productCountChange <= 0 && item.growth_rate > 50
+            );
+            
+            // 인사이트 HTML 생성 (깔끔한 표현)
+            let insights = `
+                <p><strong>최고 효율 조합</strong>: ${top1.combination} 
+                   (효율 점수 <span class="insight-highlight">${top1.efficiency_score}</span>, 
+                   상품 수 24FW ${top1.productCount24}개 → 25FW ${top1.productCount25}개, 
+                   매출 <span class="insight-highlight">${top1.sell_amount_25.toLocaleString()}백만원</span>)</p>
+            `;
+            
+            // 상품당 평균 매출
+            if (top1.productCount25 > 0) {
+                insights += `
+                    <p><strong>상품당 평균 매출</strong>: 
+                       <span class="insight-highlight">${salesPerProduct}백만원/개</span> 
+                       (${top1.productCount25}개 제품으로 ${top1.sell_amount_25.toLocaleString()}백만원 달성)</p>
+                `;
+            }
+            
+            // TOP 3 비중
+            insights += `
+                <p><strong>상위 3개 조합 집중도</strong>: 
+                   전체 매출의 <span class="insight-highlight">${top3Share}%</span> 차지 
+                   (${top3Sales.toLocaleString()}백만원 / ${totalSales.toLocaleString()}백만원)</p>
+            `;
+            
+            // 구분선
+            insights += `<div class="insight-divider"></div>`;
+            
+            // 상품 구성 변화 분석
+            insights += `
+                <p><strong>전체 상품 구성</strong>: 
+                   24FW ${totalProducts24}개에서 25FW ${totalProducts25}개로 
+                   ${totalProductChange >= 0 ? '증가' : '감소'} 
+                   (<span class="insight-highlight">${totalProductChange >= 0 ? '+' : ''}${totalProductChange}개</span>)</p>
+            `;
+            
+            // 신제품 추가 조합 분석
+            if (newProductCombos.length > 0) {
+                insights += `
+                    <p><strong>신제품 투입 조합</strong>: 
+                       ${newProductCombos.length}개 조합에서 신제품 추가 
+                       (해당 매출 ${newProductSales.toLocaleString()}백만원, 전체의 ${totalSales > 0 ? ((newProductSales/totalSales)*100).toFixed(1) : 0}%)</p>
+                `;
+            }
+            
+            // 효율 개선 조합
+            if (efficientCombos.length > 0) {
+                insights += `
+                    <p><strong>효율 개선 조합</strong>: 
+                       ${efficientCombos.length}개 조합이 상품 수 유지/감소 상태에서 매출 50% 이상 성장</p>
+                `;
+            }
+            
+            // 구분선
+            insights += `<div class="insight-divider"></div>`;
+            
+            // 전략적 제안
+            if (top1.productCountChange > 0) {
+                insights += `
+                    <p><strong>권장 전략</strong>: 
+                       1위 조합(${top1.combination})에 신제품 ${top1.productCountChange}개 추가로 매출 급증 
+                       → 동일 조합 추가 신제품 개발 검토</p>
+                `;
+            } else if (top1.productCountChange === 0 && top1.growth_rate > 100) {
+                insights += `
+                    <p><strong>권장 전략</strong>: 
+                       1위 조합은 상품 수 변화 없이 매출 ${top1.growth_rate.toFixed(1)}% 성장 
+                       → 기존 제품 최적화 성공, 물량 확대 검토</p>
+                `;
+            } else if (top1.productCount25 < 3) {
+                insights += `
+                    <p><strong>권장 전략</strong>: 
+                       1위 조합 상품 수 ${top1.productCount25}개로 소수 
+                       → 신제품 추가 개발 시 매출 확대 잠재력 높음</p>
+                `;
+            }
+            
+            insightsDiv.innerHTML = insights;
+            console.log('Golden Zone AI 인사이트 생성 완료');
+        }
+        
+        // TOP 10 판매율 제품 CSV 로드 및 렌더링
+        async function loadBestSellRate() {
+            try {
+                const response = await fetch('best_sell_rate.csv');
+                if (!response.ok) {
+                    throw new Error('best_sell_rate.csv 로딩 실패: ' + response.status);
+                }
+                
+                const csvText = await response.text();
+                const lines = csvText.trim().split('\n');
+                
+                const tbody = document.getElementById('bestSellRateTableBody');
+                tbody.innerHTML = '';
+                
+                // 데이터 행 파싱 (헤더 제외)
+                for (let i = 1; i < lines.length && i <= 10; i++) {
+                    const cols = lines[i].split(',');
+                    
+                    // rank,style_name,gender,category,sell_rate,sell_amount_m,sell_qty,stock_status
+                    const rank = parseInt(cols[0]);
+                    const styleName = cols[1];
+                    const sellRate = parseFloat(cols[4]).toFixed(1);
+                    const stockStatus = cols[7] ? cols[7].trim() : '';
+                    
+                    // 메달 아이콘
+                    let medal = '';
+                    let rankClass = '';
+                    if (rank === 1) {
+                        medal = '🥇';
+                        rankClass = 'rank-1';
+                    } else if (rank === 2) {
+                        medal = '🥈';
+                        rankClass = 'rank-2';
+                    } else if (rank === 3) {
+                        medal = '🥉';
+                        rankClass = 'rank-3';
+                    } else {
+                        medal = rank;
+                    }
+                    
+                    // ✅ 재고 상태 - 재고부족만 표시
+                    let statusBadge = '';
+                    if (stockStatus === '재고부족') {
+                        statusBadge = '<span class="badge badge-danger">재고부족</span>';
+                    }
+                    // 적정, 재고과다는 표시 안 함 (빈 칸)
+                    
+                    // ✅ 4개 컬럼만 생성 (순위, 제품명, 판매율, 상태)
+                    const tr = `
+                        <tr class="${rankClass}">
+                            <td class="rank-cell">${medal}</td>
+                            <td class="product-name">${styleName}</td>
+                            <td class="number-cell rate-highlight">${sellRate}%</td>
+                            <td class="status-cell">${statusBadge}</td>
+                        </tr>
+                    `;
+                    
+                    tbody.innerHTML += tr;
+                }
+                
+                console.log('✅ TOP 10 판매율 제품 로딩 완료');
+                
+            } catch (error) {
+                console.error('❌ TOP 10 판매율 제품 로딩 실패:', error);
+                document.getElementById('bestSellRateTableBody').innerHTML = 
+                    '<tr><td colspan="4" style="text-align:center; color:#e74c3c;">데이터 로딩 실패</td></tr>';
+            }
+        }
+        
+        // 급상승 상품 CSV 로드 및 렌더링
+        async function loadTrendingProducts() {
+            try {
+                const response = await fetch('trending_products.csv');
+                if (!response.ok) {
+                    throw new Error('HTTP error: ' + response.status);
+                }
+                const csvText = await response.text();
+                console.log('급상승 상품 CSV 로드 성공');
+                
+                const rows = csvText.trim().split('\n');
+                if (rows.length < 2) {
+                    throw new Error('CSV 데이터가 비어있음');
+                }
+                
+                // CSV 컬럼: product_name, gender, category, prev_week_qty, latest_week_qty, growth_rate, cumulative_sell_rate, prev_week_range, latest_week_range
+                const data = rows.slice(1).map(row => {
+                    const values = row.split(',');
+                    return {
+                        product_name: values[0] || '',
+                        gender: values[1] || '',
+                        category: values[2] || '',
+                        prev_week_qty: parseInt(values[3]) || 0,
+                        latest_week_qty: parseInt(values[4]) || 0,
+                        growth_rate: parseFloat(values[5]) || 0,
+                        cumulative_sell_rate: parseFloat(values[6]) || 0,
+                        prev_week_range: values[7] || '',
+                        latest_week_range: values[8] || ''
+                    };
+                });
+                
+                console.log('급상승 상품 파싱 완료:', data.length + '개 행');
+                renderTrendingProducts(data);
+            } catch (error) {
+                console.error('급상승 상품 데이터 로드 실패:', error.message);
+                document.getElementById('trendingBody').innerHTML = 
+                    '<tr><td colspan="8" style="text-align:center; padding:20px; color:#e74c3c;">데이터 로드 실패</td></tr>';
+            }
+        }
+        
+        function renderTrendingProducts(data) {
+            const tbody = document.getElementById('trendingBody');
+            
+            if (!tbody) {
+                console.error('급상승 상품 요소를 찾을 수 없음');
+                return;
+            }
+            
+            let html = '';
+            
+            data.forEach((row, idx) => {
+                const rank = idx + 1;
+                let rowClass = '';
+                let rankIcon = rank;
+                
+                // 순위별 클래스 및 아이콘 (금/은/동 배경)
+                if (rank === 1) { rowClass = 'rank-1'; rankIcon = '🥇'; }
+                else if (rank === 2) { rowClass = 'rank-2'; rankIcon = '🥈'; }
+                else if (rank === 3) { rowClass = 'rank-3'; rankIcon = '🥉'; }
+                
+                // 성별 표시 (WOMEN=여성, MEN=남성, ACC=악세서리, SHOES=슈즈)
+                let genderText = row.gender;
+                let genderClass = 'men';
+                const genderUpper = row.gender.toUpperCase();
+                if (genderUpper === 'WOMEN') { genderText = '여성'; genderClass = 'women'; }
+                else if (genderUpper === 'MEN') { genderText = '남성'; genderClass = 'men'; }
+                else if (genderUpper === 'ACC') { genderText = '악세서리'; genderClass = 'men'; }
+                else if (genderUpper === 'SHOES') { genderText = '슈즈'; genderClass = 'men'; }
+                
+                // 전주 대비 증가율 스타일
+                let growthStyle = '';
+                let growthText = '';
+                if (row.growth_rate > 0) {
+                    growthStyle = 'color:#27ae60; font-weight:700;';  // 녹색 bold
+                    growthText = '+' + row.growth_rate.toFixed(1) + '%';
+                } else if (row.growth_rate < 0) {
+                    growthStyle = 'color:#e74c3c; font-weight:700;';  // 빨강 bold
+                    growthText = row.growth_rate.toFixed(1) + '%';
+                } else {
+                    growthStyle = 'color:#888;';  // 회색
+                    growthText = '0.0%';
+                }
+                
+                // 누적 판매율 스타일 및 재고 상태
+                let sellRateStyle = '';
+                let sellRateWarning = '';
+                if (row.cumulative_sell_rate > 70) {
+                    sellRateStyle = 'color:#e74c3c; font-weight:700;';
+                    sellRateWarning = ' ⚠️재고부족';
+                } else if (row.cumulative_sell_rate >= 50) {
+                    sellRateStyle = 'color:#f39c12; font-weight:700;';
+                    sellRateWarning = ' ⚠️재고주의';
+                }
+                
+                html += `
+                <tr class="${rowClass}">
+                    <td class="rank-cell">${rankIcon}</td>
+                    <td class="product-name">${row.product_name}</td>
+                    <td><span class="gender-badge ${genderClass}">${genderText}</span></td>
+                    <td><span class="category-badge">${row.category}</span></td>
+                    <td class="number-cell" style="color:#888;">${row.prev_week_qty.toLocaleString()}</td>
+                    <td class="number-cell" style="font-weight:700;">${row.latest_week_qty.toLocaleString()}</td>
+                    <td class="number-cell" style="${growthStyle}">${growthText}</td>
+                    <td class="number-cell" style="${sellRateStyle}">${row.cumulative_sell_rate.toFixed(1)}%${sellRateWarning}</td>
+                </tr>`;
+            });
+            
+            if (data.length === 0) {
+                html = '<tr><td colspan="8" style="text-align:center; padding:20px;">급상승 상품 없음</td></tr>';
+            }
+            
+            tbody.innerHTML = html;
+            console.log('급상승 상품 테이블 렌더링 완료');
+        }
+        
+        // KPI 요약 CSV 로드 및 렌더링 (통일된 포맷)
+        async function loadKpiSummary() {
+            try {
+                const response = await fetch('kpi_summary.csv');
+                if (!response.ok) {
+                    throw new Error('HTTP error: ' + response.status);
+                }
+                const csvText = await response.text();
+                console.log('KPI 요약 CSV 로드 성공');
+                
+                const rows = csvText.trim().split('\n');
+                if (rows.length < 2) {
+                    throw new Error('CSV 데이터가 비어있음');
+                }
+                
+                const headers = rows[0].split(',');
+                const values = rows[1].split(',');
+                const data = {};
+                headers.forEach((h, i) => {
+                    data[h.trim()] = values[i] ? values[i].trim() : '';
+                });
+                
+                renderKpiCards(data);
+            } catch (error) {
+                console.error('KPI 요약 데이터 로드 실패:', error.message);
+                document.getElementById('kpiCards').innerHTML = '<div style="text-align:center; padding:40px; color:#d32f2f;">KPI 데이터 로드 실패</div>';
+            }
+        }
+        
+        function renderKpiCards(data) {
+            // 포맷 헬퍼 함수
+            const fmtM = (val) => Math.round(parseFloat(val) / 1000000).toLocaleString();
+            const fmtR = (val) => parseFloat(val).toFixed(1);
+            const fmtQ = (val) => parseInt(val).toLocaleString();
+            const fmtG = (val, unit='%') => {
+                const num = parseFloat(val);
+                const sign = num >= 0 ? '+' : '';
+                const arrow = num >= 0 ? '▲' : '▼';
+                return `${arrow} ${sign}${num.toFixed(1)}${unit}`;
+            };
+            const fmtGp = (val) => {
+                const num = parseFloat(val);
+                const sign = num >= 0 ? '+' : '';
+                return `${sign}${num.toFixed(1)}%p`;
+            };
+            const getClass = (val) => parseFloat(val) >= 0 ? 'positive' : 'negative';
+            const getClassInv = (val) => parseFloat(val) <= 0 ? 'positive' : 'negative'; // 할인율용 (낮을수록 좋음)
+            
+            // 데이터 파싱
+            const totalSales25 = parseFloat(data.total_sales_25 || 0);
+            const totalSales24 = parseFloat(data.total_sales_24 || 0);
+            const totalSalesGrowth = totalSales24 > 0 ? ((totalSales25 - totalSales24) / totalSales24 * 100) : 0;
+            
+            const totalRate25 = parseFloat(data.total_sell_rate_25 || 0);
+            const totalRate24 = parseFloat(data.total_sell_rate_24 || 0);
+            const totalRateChange = totalRate25 - totalRate24;
+            
+            const totalDiscount25 = parseFloat(data.discount_rate_25 || 0);
+            const totalDiscount24 = parseFloat(data.discount_rate_24 || 0);
+            const totalDiscountChange = totalDiscount25 - totalDiscount24;
+            
+            // WOMEN DOWN
+            const wdSales25 = parseFloat(data.wd_sales_25 || 0);
+            const wdSales24 = parseFloat(data.wd_sales_24 || 0);
+            const wdSalesGrowth = wdSales24 > 0 ? ((wdSales25 - wdSales24) / wdSales24 * 100) : 0;
+            
+            const wdRate25 = parseFloat(data.wd_sell_rate_25 || 0);
+            const wdRate24 = parseFloat(data.wd_sell_rate_24 || 0);
+            const wdRateChange = wdRate25 - wdRate24;
+            
+            const wdDiscount25 = parseFloat(data.wd_discount_rate_25 || 0);
+            const wdDiscount24 = parseFloat(data.wd_discount_rate_24 || 0);
+            const wdDiscountChange = wdDiscount25 - wdDiscount24;
+            
+            const wdQty25 = parseInt(data.wd_sell_qty_25 || 0);
+            const wdQty24 = parseInt(data.wd_sell_qty_24 || 0);
+            const wdQtyGrowth = wdQty24 > 0 ? ((wdQty25 - wdQty24) / wdQty24 * 100) : 0;
+            
+            // 입고금액
+            const inAmount25 = parseFloat(data.total_in_amount_25 || 0);
+            const inAmount24 = parseFloat(data.total_in_amount_24 || 0);
+            const inAmountGrowth = inAmount24 > 0 ? ((inAmount25 - inAmount24) / inAmount24 * 100) : 0;
+            
+            // 금주
+            const latestWeek = data.latest_week_no_25 || '47w';
+            const weekSales25 = parseFloat(data.week_sales_25 || 0);
+            const weekSales24 = parseFloat(data.week_sales_24 || 0);
+            const weekSalesGrowth = weekSales24 > 0 ? ((weekSales25 - weekSales24) / weekSales24 * 100) : 0;
+            
+            const weekDiscount25 = parseFloat(data.week_discount_rate_25 || 0);
+            const weekDiscount24 = parseFloat(data.week_discount_rate_24 || 0);
+            const weekDiscountChange = weekDiscount25 - weekDiscount24;
+            
+            // 금주 WD
+            const weekWdSales25 = parseFloat(data.week_wd_sales_25 || 0);
+            const weekWdSales24 = parseFloat(data.week_wd_sales_24 || 0);
+            const weekWdSalesGrowth = weekWdSales24 > 0 ? ((weekWdSales25 - weekWdSales24) / weekWdSales24 * 100) : 0;
+            
+            const weekWdRate25 = parseFloat(data.week_wd_sell_rate_25 || 0);
+            const weekWdRate24 = parseFloat(data.week_wd_sell_rate_24 || 0);
+            const weekWdRateChange = weekWdRate25 - weekWdRate24;
+            
+            const weekWdQty25 = parseInt(data.week_wd_sell_qty_25 || 0);
+            const weekWdQty24 = parseInt(data.week_wd_sell_qty_24 || 0);
+            const weekWdQtyGrowth = weekWdQty24 > 0 ? ((weekWdQty25 - weekWdQty24) / weekWdQty24 * 100) : 0;
+            
+            // KPI 아이템 생성 헬퍼
+            const createKpiItem = (label, value25, unit, value24, growth, isDiscount=false, fullWidth=false) => {
+                const growthClass = isDiscount ? getClassInv(growth) : getClass(growth);
+                const unitSuffix = unit === '%' ? '%p' : '%';
+                const fwClass = fullWidth ? ' full-width' : '';
+                return `
+                    <div class="kpi-item${fwClass}">
+                        <div class="kpi-label">${label}</div>
+                        <div class="kpi-main">
+                            <span class="kpi-value">${value25}</span>
+                            <span class="unit">${unit}</span>
+                        </div>
+                        <div class="kpi-comparison">
+                            <div class="comparison-label">vs 24FW</div>
+                            <div class="comparison-value">${value24}${unit}</div>
+                            <div class="comparison-growth ${growthClass}">${fmtG(growth, unitSuffix)}</div>
+                        </div>
+                    </div>
+                `;
+            };
+            
+            // HTML 생성
+            const kpiCardsHTML = `
+                <!-- Card 1: 25FW 누적 실적 -->
+                <div class="kpi-card bg-blue animate-delay-1">
+                    <div class="kpi-header">
+                        <span class="kpi-icon">🔥</span>
+                        <span class="kpi-title">25FW 누적 실적</span>
+                    </div>
+                    <div class="kpi-body">
+                        ${createKpiItem('매출', fmtM(totalSales25), '백만원', fmtM(totalSales24), totalSalesGrowth)}
+                        ${createKpiItem('판매율', fmtR(totalRate25), '%', fmtR(totalRate24), totalRateChange)}
+                        ${createKpiItem('할인율', fmtR(totalDiscount25), '%', fmtR(totalDiscount24), totalDiscountChange, true)}
+                    </div>
+                </div>
+                
+                <!-- Card 2: WOMEN DOWN 누적 -->
+                <div class="kpi-card bg-purple animate-delay-2">
+                    <div class="kpi-header">
+                        <span class="kpi-icon">👗</span>
+                        <span class="kpi-title">WOMEN DOWN 누적</span>
+                    </div>
+                    <div class="kpi-body">
+                        ${createKpiItem('매출', fmtM(wdSales25), '백만원', fmtM(wdSales24), wdSalesGrowth)}
+                        ${createKpiItem('판매율', fmtR(wdRate25), '%', fmtR(wdRate24), wdRateChange)}
+                        ${createKpiItem('할인율', fmtR(wdDiscount25), '%', fmtR(wdDiscount24), wdDiscountChange, true)}
+                        ${createKpiItem('판매수량', fmtQ(wdQty25), '장', fmtQ(wdQty24), wdQtyGrowth)}
+                    </div>
+                </div>
+                
+                <!-- Card 3: 25FW 입고금액 -->
+                <div class="kpi-card bg-teal animate-delay-3">
+                    <div class="kpi-header">
+                        <span class="kpi-icon">📦</span>
+                        <span class="kpi-title">25FW 입고금액</span>
+                    </div>
+                    <div class="kpi-body">
+                        ${createKpiItem('입고금액', fmtM(inAmount25), '백만원', fmtM(inAmount24), inAmountGrowth, false, true)}
+                    </div>
+                </div>
+                
+                <!-- Card 4: 금주 실적 -->
+                <div class="kpi-card bg-green animate-delay-1">
+                    <div class="kpi-header">
+                        <span class="kpi-icon">📅</span>
+                        <span class="kpi-title">금주(${latestWeek}) 실적</span>
+                    </div>
+                    <div class="kpi-body">
+                        ${createKpiItem('매출', fmtM(weekSales25), '백만원', fmtM(weekSales24), weekSalesGrowth)}
+                        ${createKpiItem('할인율', fmtR(weekDiscount25), '%', fmtR(weekDiscount24), weekDiscountChange, true)}
+                    </div>
+                </div>
+                
+                <!-- Card 5: 금주 WOMEN DOWN -->
+                <div class="kpi-card bg-orange animate-delay-2">
+                    <div class="kpi-header">
+                        <span class="kpi-icon">📊</span>
+                        <span class="kpi-title">금주(${latestWeek}) WD</span>
+                    </div>
+                    <div class="kpi-body">
+                        ${createKpiItem('매출', fmtM(weekWdSales25), '백만원', fmtM(weekWdSales24), weekWdSalesGrowth)}
+                        ${createKpiItem('판매율', fmtR(weekWdRate25), '%', fmtR(weekWdRate24), weekWdRateChange)}
+                        ${createKpiItem('판매수량', fmtQ(weekWdQty25), '장', fmtQ(weekWdQty24), weekWdQtyGrowth)}
+                    </div>
+                </div>
+                
+                <!-- Card 6: 25FW 마감예상 (고정값) -->
+                <div class="kpi-card bg-red animate-delay-3">
+                    <div class="kpi-header">
+                        <span class="kpi-icon">🎯</span>
+                        <span class="kpi-title">25FW 마감예상</span>
+                    </div>
+                    <div class="kpi-body">
+                        <div class="kpi-item">
+                            <div class="kpi-label">매출</div>
+                            <div class="kpi-main">
+                                <span class="kpi-value">18,500</span>
+                                <span class="unit">백만원</span>
+                            </div>
+                        </div>
+                        <div class="kpi-item">
+                            <div class="kpi-label">판매율</div>
+                            <div class="kpi-main">
+                                <span class="kpi-value">61.0</span>
+                                <span class="unit">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kpi-footer">
+                        <div class="kpi-note">시즌 종료 시점 예상치</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('kpiCards').innerHTML = kpiCardsHTML;
+            console.log('KPI 카드 렌더링 완료 (통일된 포맷)');
+            
+            // AI 분석 생성 (KPI 데이터 기반)
+            generateAIAnalysis(data);
+        }
+        
+        // ============================================================
+        // AI 분석 생성 함수
+        // ============================================================
+        // CSV 파싱 헬퍼 함수
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const headers = lines[0].split(',');
+            return lines.slice(1).map(line => {
+                const values = line.split(',');
+                const obj = {};
+                headers.forEach((header, i) => {
+                    obj[header.trim()] = values[i] ? values[i].trim() : '';
+                });
+                return obj;
+            });
+        }
+        
+        function generateAIAnalysis(kpi) {
+            console.log('AI 분석 시작 (카테고리 데이터 로딩)...');
+            
+            // 카테고리 데이터 추가 로드
+            fetch('category_summary.csv')
+                .then(r => r.text())
+                .then(categoryText => {
+                    const categories = parseCSV(categoryText);
+                    renderAIAnalysis(kpi, categories);
+                })
+                .catch(error => {
+                    console.error('카테고리 데이터 로드 실패:', error);
+                    renderAIAnalysis(kpi, []);
+                });
+        }
+        
+        function renderAIAnalysis(kpi, categories) {
+            console.log('AI 분석 렌더링 시작...');
+            
+            // 포맷 헬퍼 함수
+            const formatM = (val) => Math.round(parseFloat(val) / 1000000).toLocaleString() + '백만원';
+            const formatP = (val) => parseFloat(val).toFixed(1) + '%';
+            const formatG = (val) => (parseFloat(val) >= 0 ? '+' : '') + parseFloat(val).toFixed(1) + '%';
+            
+            // ============================================================
+            // 1. 핵심 인사이트 (잘된 점 위주)
+            // ============================================================
+            const insights = [];
+            
+            // 전체 매출 성장
+            const totalSales25 = parseFloat(kpi.total_sales_25 || 0);
+            const totalGrowth = parseFloat(kpi.growth_rate_total_sales || 0);
+            insights.push(`<strong>25FW 누적 매출</strong> ${formatM(totalSales25)} (전년 대비 ${formatG(totalGrowth)} 성장)`);
+            
+            // WOMEN DOWN 핵심 카테고리
+            const wdSales = parseFloat(kpi.wd_sales_25 || 0);
+            const wdGrowth = parseFloat(kpi.growth_rate_wd_sales || 0);
+            const wdShare = totalSales25 > 0 ? ((wdSales / totalSales25) * 100).toFixed(1) : 0;
+            const wdRate = parseFloat(kpi.wd_sell_rate_25 || 0).toFixed(1);
+            insights.push(`<strong>WOMEN DOWN 매출</strong> ${formatM(wdSales)} (전체의 ${wdShare}%, 판매율 ${wdRate}%) - 핵심 카테고리 집중도 상승`);
+            
+            // 할인율 분석
+            const discountRate25 = parseFloat(kpi.discount_rate_25 || 0);
+            const discountRate24 = parseFloat(kpi.discount_rate_24 || 0);
+            const discountChange = (discountRate25 - discountRate24).toFixed(1);
+            insights.push(`<strong>전체 할인율</strong> ${discountRate25.toFixed(1)}% (전년 ${discountRate24.toFixed(1)}%, ${discountChange >= 0 ? '+' : ''}${discountChange}%p) - 수익성 ${parseFloat(discountChange) < 0 ? '개선' : '유지'}`);
+            
+            // 금주 실적
+            const weekSales = parseFloat(kpi.week_sales_25 || 0);
+            const weekGrowth = parseFloat(kpi.growth_rate_week_sales || 0);
+            insights.push(`<strong>금주(${kpi.latest_week_no_25}) 매출</strong> ${formatM(weekSales)} (전년 동주 대비 ${formatG(weekGrowth)}) - 시즌 피크 진입`);
+            
+            // ============================================================
+            // 2. 주의사항 (카테고리 불균형 중심)
+            // ============================================================
+            const warnings = [];
+            
+            // 카테고리 데이터에서 WOMEN/MEN 찾기
+            const womenTotal = categories.find(c => c.category === 'WOMEN' || (c.gender === 'WOMEN' && !c.category));
+            const menTotal = categories.find(c => c.category === 'MEN' || (c.gender === 'MEN' && !c.category));
+            
+            if (womenTotal && menTotal) {
+                const womenRate = parseFloat(womenTotal.sell_rate_25 || womenTotal.rate_25 || 0).toFixed(1);
+                const menRate = parseFloat(menTotal.sell_rate_25 || menTotal.rate_25 || 0).toFixed(1);
+                const rateDiff = (parseFloat(womenRate) - parseFloat(menRate)).toFixed(1);
+                warnings.push(`<strong>카테고리 불균형</strong>: WOMEN 판매율 ${womenRate}% vs MEN ${menRate}% (격차 ${rateDiff}%p) - 남성 카테고리 판매 효율 저조`);
+            }
+            
+            // MEN 매출 비중
+            if (menTotal) {
+                const menSales = parseFloat(menTotal.sales_25 || menTotal.sell_amount_25 || 0);
+                const menShare = totalSales25 > 0 ? ((menSales / totalSales25) * 100).toFixed(1) : 0;
+                const menGrowth = parseFloat(menTotal.growth || menTotal.growth_rate || 0).toFixed(1);
+                warnings.push(`<strong>MEN 카테고리 매출 비중</strong> ${menShare}% (성장률 ${formatG(menGrowth)}) - WOMEN 대비 현저히 낮은 매출 기여도`);
+            }
+            
+            // MEN 세부 카테고리 분석
+            const menCategories = categories.filter(c => c.gender === 'MEN' && c.category && c.category !== 'MEN');
+            if (menCategories.length > 0) {
+                const menCatStatus = menCategories.map(c => 
+                    `${c.category}(${parseFloat(c.sell_rate_25 || c.rate_25 || 0).toFixed(1)}%)`
+                ).join(', ');
+                warnings.push(`<strong>MEN 전체 카테고리 판매 부진</strong>: ${menCatStatus} - 상품 구성 및 라인업 전면 점검 필요`);
+            } else {
+                warnings.push(`<strong>MEN 카테고리</strong> - WOMEN 대비 성장률 점검 필요, 상품 구성 다양화 검토`);
+            }
+            
+            // ============================================================
+            // 3. 향후 실행 계획 (상품 전략 중심)
+            // ============================================================
+            const actions = [];
+            
+            // 1. 초도 물량 적중도
+            actions.push(`<strong>초도 물량 적중도 향상</strong>: WOMEN DOWN 히트 상품 조기 발굴 시스템 구축 + 빠른 반응생산 프로세스 확립 (리드타임 단축)`);
+            
+            // 2. 베스트 상품 반응생산
+            const wdSellRate = parseFloat(kpi.wd_sell_rate_25 || 0);
+            if (wdSellRate > 25) {
+                actions.push(`<strong>베스트 상품 반응생산</strong>: WOMEN DOWN 고판매율(${wdSellRate.toFixed(1)}%) 제품 즉시 추가 생산 투입 (재고 소진 前 선제 대응)`);
+            }
+            
+            // 3. MEN 카테고리 재점검
+            actions.push(`<strong>MEN 카테고리 상품 구성 재점검</strong>: 전 카테고리(DOWN, OUTER, TOP, BOTTOM) 판매 부진 원인 분석 → 디자인/가격/핏 등 상품 경쟁력 개선안 도출`);
+            
+            // 4. WOMEN BOTTOM 육성
+            const womenBottom = categories.find(c => c.gender === 'WOMEN' && c.category === 'BOTTOM');
+            if (womenBottom) {
+                const bottomRateChange = parseFloat(womenBottom.rate_change || womenBottom.sell_rate_change || 0).toFixed(1);
+                if (parseFloat(bottomRateChange) > 0) {
+                    actions.push(`<strong>WOMEN BOTTOM 육성 전략</strong>: 판매율 +${bottomRateChange}%p 상승 → 차기 SUB 핵심 카테고리 육성 (신규 스타일 확대, 라인업 강화)`);
+                }
+            }
+            
+            // ============================================================
+            // HTML 렌더링
+            // ============================================================
+            document.getElementById('ai-insights').innerHTML = insights.map(i => `<li>${i}</li>`).join('');
+            document.getElementById('ai-warnings').innerHTML = warnings.map(w => `<li>${w}</li>`).join('');
+            document.getElementById('ai-actions').innerHTML = actions.map(a => `<li>${a}</li>`).join('');
+            
+            console.log('AI 분석 완료');
+        }
+    </script>
+</div>
+</body>
+</html>
