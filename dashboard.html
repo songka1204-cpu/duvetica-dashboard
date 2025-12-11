@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DUVETICA Weekly Sales Dashboard</title>
+    <title>DUVETICA 주차별 매출 대시보드</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -436,6 +436,348 @@
             color: var(--text-light);
         }
         
+        /* 카테고리별 BEST 상품 섹션 - 3열 그리드 */
+        .category-best-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .category-best-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .category-best-section:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        
+        .category-best-section.women {
+            border: 2px solid #ffe4e6;
+        }
+        
+        .category-best-section.men {
+            border: 2px solid #e0f2fe;
+        }
+        
+        .category-best-section.neutral {
+            border: 2px solid #e0e0e0;
+        }
+        
+        .category-best-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .category-best-title .emoji {
+            font-size: 1.2rem;
+        }
+        
+        .category-best-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            color: #1a1a1a;
+        }
+        
+        .category-best-table thead {
+            background: #f8f9fa;
+        }
+        
+        .category-best-table th {
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+            white-space: nowrap;
+            color: #1a1a1a;
+        }
+        
+        .category-best-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: middle;
+            color: #1a1a1a;
+        }
+        
+        /* 모든 섹션 텍스트 색상 통일 */
+        .category-best-section,
+        .category-best-section.women,
+        .category-best-section.men,
+        .category-best-section.neutral {
+            color: #1a1a1a;
+        }
+        
+        .category-best-section .name-cell,
+        .category-best-section .sales-cell,
+        .category-best-section .qty-cell,
+        .category-best-section .rank-cell {
+            color: #1a1a1a;
+        }
+        
+        .category-best-table tbody tr {
+            height: 44px;
+        }
+        
+        .category-best-table tbody tr:nth-child(-n+3) {
+            background: #fffbea;
+        }
+        
+        .category-best-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .category-best-table .rank-cell {
+            text-align: center;
+            font-weight: 700;
+            width: 40px;
+        }
+        
+        .category-best-table .name-cell {
+            text-align: left;
+            font-weight: 500;
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .category-best-table .sales-cell {
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+        }
+        
+        .category-best-table .qty-cell {
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .gender-badge-small {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        .gender-badge-small.women {
+            background: #ffe4e6;
+            color: #c2185b;
+        }
+        
+        .gender-badge-small.men {
+            background: #e0f2fe;
+            color: #1565c0;
+        }
+        
+        .gender-badge-small.all {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        @media (max-width: 1200px) {
+            .category-best-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .category-best-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-best-table {
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* 섹션 헤더 (접기/펼치기 버튼 포함) */
+        .cumulative-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+        }
+        
+        .cumulative-section-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .toggle-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* 주간 BEST 섹션 */
+        .weekly-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 48px 0 24px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 12px;
+            color: white;
+        }
+        
+        .weekly-section-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .weekly-section-header .toggle-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .weekly-section-header .toggle-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .weekly-best-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+        
+        .weekly-best-card {
+            background: white;
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .weekly-best-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .weekly-best-card.women {
+            border-top: 3px solid #e91e63;
+        }
+        
+        .weekly-best-card.men {
+            border-top: 3px solid #2196f3;
+        }
+        
+        .weekly-best-card.neutral {
+            border-top: 3px solid #9e9e9e;
+        }
+        
+        .weekly-best-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .weekly-best-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.72rem;
+            color: #1a1a1a;
+        }
+        
+        .weekly-best-table th {
+            padding: 6px 4px;
+            text-align: center;
+            font-weight: 600;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.68rem;
+        }
+        
+        .weekly-best-table td {
+            padding: 6px 4px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #1a1a1a;
+        }
+        
+        .weekly-best-table .rank-cell {
+            text-align: center;
+            font-weight: 600;
+            width: 28px;
+        }
+        
+        .weekly-best-table .name-cell {
+            text-align: left;
+            max-width: 80px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .weekly-best-table .sales-cell,
+        .weekly-best-table .qty-cell {
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+        }
+        
+        .weekly-best-table tbody tr:first-child {
+            background: #fffbea;
+        }
+        
+        @media (max-width: 1400px) {
+            .weekly-best-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .weekly-best-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .weekly-best-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
         /* KPI 카드 (2x3 그리드) */
         .kpi-cards {
             display: grid;
@@ -777,45 +1119,120 @@
             font-family: 'JetBrains Mono', monospace;
         }
         
-        /* 카테고리 테이블 - 스타일링 */
-        .category-table {
-            border: 1px solid #e0e0e0;
+        /* ========================================
+           카테고리 분석 테이블 스타일
+           ======================================== */
+        .category-analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            border: 2px solid #dee2e6;
         }
         
-        /* 모든 구분선 연한 회색 통일 */
-        .category-table th,
-        .category-table td {
-            border: 1px solid #e0e0e0 !important;
+        .category-analysis-table th,
+        .category-analysis-table td {
+            border: 1px solid #dee2e6;
+            padding: 10px 12px;
+            text-align: right;
         }
         
-        /* WOMEN 행 배경색 - 분홍색 */
-        .category-table tbody tr.women-row {
-            background-color: #ffe6f0 !important;
+        .category-analysis-table td:first-child {
+            text-align: left;
         }
         
-        /* WOMEN 하위 행 배경색 - 연한 분홍색 */
-        .category-table tbody tr.women-sub-row {
-            background-color: #fff0f5 !important;
+        /* 헤더 스타일 */
+        .category-analysis-table .header-row-1 th {
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            font-weight: 700;
+            text-align: center;
+            padding: 12px 8px;
         }
         
-        /* MEN 행 배경색 - 연한 파랑색 */
-        .category-table tbody tr.men-row {
-            background-color: #e6f2ff !important;
+        .category-analysis-table .header-row-2 th {
+            background: #f1f3f5;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 8px 6px;
         }
         
-        /* MEN 하위 행 배경색 - 연한 파랑색 */
-        .category-table tbody tr.men-sub-row {
-            background-color: #f0f7ff !important;
+        .category-analysis-table .th-category {
+            width: 120px;
+            text-align: center !important;
         }
         
-        /* WOMEN DOWN 강조 */
-        .category-table tbody tr.highlight-row td {
+        .category-analysis-table .th-group {
+            border-bottom: 2px solid #adb5bd;
+        }
+        
+        .category-analysis-table .th-sales { background: #e3f2fd !important; }
+        .category-analysis-table .th-qty { background: #f3e5f5 !important; }
+        .category-analysis-table .th-intag { background: #e8f5e9 !important; }
+        .category-analysis-table .th-rate { background: #fff3e0 !important; }
+        
+        /* 행 스타일 */
+        .category-analysis-table .row-total {
+            background-color: #f8f9fa !important;
             font-weight: 700;
         }
         
-        /* ACC/SHOES 카테고리 굵게 */
-        .category-table tbody tr.bold-category td:first-child {
+        .category-analysis-table .row-women {
+            background-color: #ffe4e6 !important;
             font-weight: 700;
+        }
+        
+        .category-analysis-table .row-women-sub {
+            background-color: #fff5f7 !important;
+        }
+        
+        .category-analysis-table .row-men {
+            background-color: #e0f2fe !important;
+            font-weight: 700;
+        }
+        
+        .category-analysis-table .row-men-sub {
+            background-color: #f0f9ff !important;
+        }
+        
+        .category-analysis-table .row-acc,
+        .category-analysis-table .row-shoes {
+            background-color: #f8f9fa !important;
+            font-weight: 700;
+        }
+        
+        /* 숫자 색상 */
+        .category-analysis-table .num-positive {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .category-analysis-table .num-negative {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .category-analysis-table .num-zero {
+            color: #95a5a6;
+        }
+        
+        /* 카테고리명 */
+        .category-analysis-table .cat-name {
+            font-weight: 600;
+        }
+        
+        .category-analysis-table .cat-emoji {
+            margin-right: 4px;
+        }
+        
+        /* 숫자 셀 */
+        .category-analysis-table .num-cell {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+        }
+        
+        /* 호버 효과 */
+        .category-analysis-table tbody tr:hover {
+            filter: brightness(0.97);
         }
         
         /* 차트 */
@@ -1411,8 +1828,8 @@
     <div class="header">
         <div class="header-content">
             <div class="logo-space">📊</div>
-            <h1>DUVETICA Weekly Sales Dashboard</h1>
-            <p class="subtitle">Week 36 ~ Week 47 (25FW vs 24FW) Analysis Report</p>
+            <h1>DUVETICA 주차별 매출 대시보드</h1>
+            <p class="subtitle">25FW vs 24FW 분석 리포트</p>
         </div>
     </div>
     
@@ -1462,97 +1879,8 @@
                         <th style="text-align:right">판매수량</th>
                     </tr>
                 </thead>
-                <tbody>
-        <tr>
-            <td class="rank-cell medal-gold">🥇</td>
-            <td class="product-name">알로로 벨벳</td>
-            <td><span class="gender-badge women">여성</span></td>
-            <td><span class="category-badge">DOWN</span></td>
-            <td class="spec-cell">Textured × Middle × Heavy</td>
-            <td class="number-cell">722.3</td>
-            <td class="number-cell">595</td>
-        </tr>
-        <tr>
-            <td class="rank-cell medal-silver">🥈</td>
-            <td class="product-name">에우리피데 벨벳</td>
-            <td><span class="gender-badge women">여성</span></td>
-            <td><span class="category-badge">DOWN</span></td>
-            <td class="spec-cell">Textured × Middle × Light</td>
-            <td class="number-cell">351.4</td>
-            <td class="number-cell">353</td>
-        </tr>
-        <tr>
-            <td class="rank-cell medal-bronze">🥉</td>
-            <td class="product-name">소바라</td>
-            <td><span class="gender-badge women">여성</span></td>
-            <td><span class="category-badge">DOWN</span></td>
-            <td class="spec-cell">Shiny × Long × Medium</td>
-            <td class="number-cell">344.4</td>
-            <td class="number-cell">290</td>
-        </tr>
-        <tr>
-            <td class="rank-cell">4</td>
-            <td class="product-name">토리사 벨벳</td>
-            <td><span class="gender-badge women">여성</span></td>
-            <td><span class="category-badge">DOWN</span></td>
-            <td class="spec-cell">Textured × Short × Heavy</td>
-            <td class="number-cell">241.6</td>
-            <td class="number-cell">206</td>
-        </tr>
-        <tr>
-            <td class="rank-cell">5</td>
-            <td class="product-name">알로로</td>
-            <td><span class="gender-badge women">여성</span></td>
-            <td><span class="category-badge">DOWN</span></td>
-            <td class="spec-cell">Shiny × Middle × Heavy</td>
-            <td class="number-cell">178.1</td>
-            <td class="number-cell">152</td>
-        </tr>
-        <tr>
-            <td class="rank-cell">6</td>
-            <td class="product-name">리아노리 K</td>
-            <td><span class="gender-badge women">여성</span></td>
-            <td><span class="category-badge">DOWN</span></td>
-            <td class="spec-cell">Semi-Shiny × Long × Light</td>
-            <td class="number-cell">156.8</td>
-            <td class="number-cell">135</td>
-        </tr>
-        <tr>
-            <td class="rank-cell">7</td>
-            <td class="product-name">라바로네</td>
-            <td><span class="gender-badge women">여성</span></td>
-            <td><span class="category-badge">DOWN</span></td>
-            <td class="spec-cell">Soft-Matte × Long × Heavy</td>
-            <td class="number-cell">139.5</td>
-            <td class="number-cell">103</td>
-        </tr>
-        <tr>
-            <td class="rank-cell">8</td>
-            <td class="product-name">에우리피데</td>
-            <td><span class="gender-badge women">여성</span></td>
-            <td><span class="category-badge">DOWN</span></td>
-            <td class="spec-cell">Shiny × Middle × Light</td>
-            <td class="number-cell">136.6</td>
-            <td class="number-cell">136</td>
-        </tr>
-        <tr>
-            <td class="rank-cell">9</td>
-            <td class="product-name">콜레다라</td>
-            <td><span class="gender-badge women">여성</span></td>
-            <td><span class="category-badge">DOWN</span></td>
-            <td class="spec-cell">Soft-Matte × Middle × Light</td>
-            <td class="number-cell">133.1</td>
-            <td class="number-cell">146</td>
-        </tr>
-        <tr>
-            <td class="rank-cell">10</td>
-            <td class="product-name">마라테아 미드</td>
-            <td><span class="gender-badge women">여성</span></td>
-            <td><span class="category-badge">DOWN</span></td>
-            <td class="spec-cell">Soft-Matte × Middle × Heavy</td>
-            <td class="number-cell">127.2</td>
-            <td class="number-cell">100</td>
-        </tr>
+                <tbody id="bestProductsTableBody">
+                    <!-- 동적 로딩 -->
                 </tbody>
             </table>
         </div>
@@ -1566,14 +1894,14 @@
                         <th>제품명</th>
                         <th style="text-align:right">판매율</th>
                         <th style="text-align:center">상태</th>
-                    </tr>
+        </tr>
                 </thead>
                 <tbody id="bestSellRateTableBody">
                     <tr><td colspan="4" style="text-align:center; padding:20px;">데이터 로딩 중...</td></tr>
                 </tbody>
             </table>
-    </div>
-    
+        </div>
+        
         <div class="best-card animate-delay-3">
             <h3><span class="emoji">🚀</span>판매량 급상승 상품 Top 10 (전주 대비 판매 증감)</h3>
             <table>
@@ -1596,6 +1924,404 @@
         </div>
     </div>
     
+    <!-- 누적 BEST 섹션 -->
+    <div id="cumulativeBestSection">
+        <div class="cumulative-section-header">
+            <h2>📊 누적 BEST - 카테고리별 TOP 10 (25FW 전체)</h2>
+            <button id="toggleCumulativeBest" class="toggle-btn">접기 ▲</button>
+        </div>
+        <div id="cumulativeBestContent" class="category-best-container">
+            <!-- WOMEN OUTER -->
+        <div class="category-best-section women">
+            <div class="category-best-title">
+                <span class="emoji">👗</span> WOMEN OUTER - TOP 10 매출 (25FW)
+            </div>
+            <table class="category-best-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>제품명</th>
+                        <th>매출액</th>
+                        <th>판매수량</th>
+        </tr>
+                </thead>
+                <tbody id="womenOuterBestBody">
+                    <tr><td colspan="4" style="text-align:center; padding:20px;">로딩중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- WOMEN TOP -->
+        <div class="category-best-section women">
+            <div class="category-best-title">
+                <span class="emoji">👕</span> WOMEN TOP - TOP 10 매출 (25FW)
+            </div>
+            <table class="category-best-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>제품명</th>
+                        <th>매출액</th>
+                        <th>판매수량</th>
+        </tr>
+                </thead>
+                <tbody id="womenTopBestBody">
+                    <tr><td colspan="4" style="text-align:center; padding:20px;">로딩중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- WOMEN BOTTOM -->
+        <div class="category-best-section women">
+            <div class="category-best-title">
+                <span class="emoji">👖</span> WOMEN BOTTOM - TOP 10 매출 (25FW)
+            </div>
+            <table class="category-best-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>제품명</th>
+                        <th>매출액</th>
+                        <th>판매수량</th>
+        </tr>
+                </thead>
+                <tbody id="womenBottomBestBody">
+                    <tr><td colspan="4" style="text-align:center; padding:20px;">로딩중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- MEN DOWN -->
+        <div class="category-best-section men">
+            <div class="category-best-title">
+                <span class="emoji">🧥</span> MEN DOWN - TOP 10 매출 (25FW)
+            </div>
+            <table class="category-best-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>제품명</th>
+                        <th>매출액</th>
+                        <th>판매수량</th>
+        </tr>
+                </thead>
+                <tbody id="menDownBestBody">
+                    <tr><td colspan="4" style="text-align:center; padding:20px;">로딩중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- MEN OUTER -->
+        <div class="category-best-section men">
+            <div class="category-best-title">
+                <span class="emoji">🧥</span> MEN OUTER - TOP 10 매출 (25FW)
+            </div>
+            <table class="category-best-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>제품명</th>
+                        <th>매출액</th>
+                        <th>판매수량</th>
+        </tr>
+                </thead>
+                <tbody id="menOuterBestBody">
+                    <tr><td colspan="4" style="text-align:center; padding:20px;">로딩중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- MEN TOP -->
+        <div class="category-best-section men">
+            <div class="category-best-title">
+                <span class="emoji">👔</span> MEN TOP - TOP 10 매출 (25FW)
+            </div>
+            <table class="category-best-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>제품명</th>
+                        <th>매출액</th>
+                        <th>판매수량</th>
+        </tr>
+                </thead>
+                <tbody id="menTopBestBody">
+                    <tr><td colspan="4" style="text-align:center; padding:20px;">로딩중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- MEN BOTTOM -->
+        <div class="category-best-section men">
+            <div class="category-best-title">
+                <span class="emoji">👖</span> MEN BOTTOM - TOP 10 매출 (25FW)
+            </div>
+            <table class="category-best-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>제품명</th>
+                        <th>매출액</th>
+                        <th>판매수량</th>
+        </tr>
+                </thead>
+                <tbody id="menBottomBestBody">
+                    <tr><td colspan="4" style="text-align:center; padding:20px;">로딩중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- ACC -->
+        <div class="category-best-section neutral">
+            <div class="category-best-title">
+                <span class="emoji">👜</span> ACC - TOP 10 매출 (25FW)
+            </div>
+            <table class="category-best-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>제품명</th>
+                        <th>매출액</th>
+                        <th>판매수량</th>
+        </tr>
+                </thead>
+                <tbody id="accBestBody">
+                    <tr><td colspan="4" style="text-align:center; padding:20px;">로딩중...</td></tr>
+                </tbody>
+            </table>
+    </div>
+    
+        <!-- SHOES -->
+        <div class="category-best-section neutral">
+            <div class="category-best-title">
+                <span class="emoji">👞</span> SHOES - TOP 10 매출 (25FW)
+            </div>
+            <table class="category-best-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>제품명</th>
+                        <th>매출액</th>
+                        <th>판매수량</th>
+                    </tr>
+                </thead>
+                <tbody id="shoesBestBody">
+                    <tr><td colspan="4" style="text-align:center; padding:20px;">로딩중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+    
+    <!-- 주간 BEST 섹션 -->
+    <div id="weeklyBestSection">
+        <div class="weekly-section-header">
+            <h2>🔥 주간 BEST - 최근 주차 TOP 5 (49w)</h2>
+            <button id="toggleWeeklyBest" class="toggle-btn">접기 ▲</button>
+        </div>
+        <div id="weeklyBestContent" class="weekly-best-grid">
+            <!-- 여성 DOWN -->
+            <div class="weekly-best-card women">
+                <div class="weekly-best-title">
+                    <span>🔥</span> 여성 DOWN 주간 BEST
+                </div>
+                <table class="weekly-best-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>제품명</th>
+                            <th>매출액</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyWomenDownBody">
+                        <tr><td colspan="4" style="text-align:center;">로딩중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 여성 OUTER -->
+            <div class="weekly-best-card women">
+                <div class="weekly-best-title">
+                    <span>👗</span> 여성 OUTER 주간 BEST
+                </div>
+                <table class="weekly-best-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>제품명</th>
+                            <th>매출액</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyWomenOuterBody">
+                        <tr><td colspan="4" style="text-align:center;">로딩중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 여성 TOP -->
+            <div class="weekly-best-card women">
+                <div class="weekly-best-title">
+                    <span>👕</span> 여성 TOP 주간 BEST
+                </div>
+                <table class="weekly-best-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>제품명</th>
+                            <th>매출액</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyWomenTopBody">
+                        <tr><td colspan="4" style="text-align:center;">로딩중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 여성 BOTTOM -->
+            <div class="weekly-best-card women">
+                <div class="weekly-best-title">
+                    <span>👖</span> 여성 BOTTOM 주간 BEST
+                </div>
+                <table class="weekly-best-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>제품명</th>
+                            <th>매출액</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyWomenBottomBody">
+                        <tr><td colspan="4" style="text-align:center;">로딩중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 남성 DOWN -->
+            <div class="weekly-best-card men">
+                <div class="weekly-best-title">
+                    <span>🧥</span> 남성 DOWN 주간 BEST
+                </div>
+                <table class="weekly-best-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>제품명</th>
+                            <th>매출액</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyMenDownBody">
+                        <tr><td colspan="4" style="text-align:center;">로딩중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 남성 OUTER -->
+            <div class="weekly-best-card men">
+                <div class="weekly-best-title">
+                    <span>🧥</span> 남성 OUTER 주간 BEST
+                </div>
+                <table class="weekly-best-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>제품명</th>
+                            <th>매출액</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyMenOuterBody">
+                        <tr><td colspan="4" style="text-align:center;">로딩중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 남성 TOP -->
+            <div class="weekly-best-card men">
+                <div class="weekly-best-title">
+                    <span>👔</span> 남성 TOP 주간 BEST
+                </div>
+                <table class="weekly-best-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>제품명</th>
+                            <th>매출액</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyMenTopBody">
+                        <tr><td colspan="4" style="text-align:center;">로딩중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 남성 BOTTOM -->
+            <div class="weekly-best-card men">
+                <div class="weekly-best-title">
+                    <span>👖</span> 남성 BOTTOM 주간 BEST
+                </div>
+                <table class="weekly-best-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>제품명</th>
+                            <th>매출액</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyMenBottomBody">
+                        <tr><td colspan="4" style="text-align:center;">로딩중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- ACC -->
+            <div class="weekly-best-card neutral">
+                <div class="weekly-best-title">
+                    <span>👜</span> ACC 주간 BEST
+                </div>
+                <table class="weekly-best-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>제품명</th>
+                            <th>매출액</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyAccBody">
+                        <tr><td colspan="4" style="text-align:center;">로딩중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- SHOES -->
+            <div class="weekly-best-card neutral">
+                <div class="weekly-best-title">
+                    <span>👞</span> SHOES 주간 BEST
+                </div>
+                <table class="weekly-best-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>제품명</th>
+                            <th>매출액</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyShoesBody">
+                        <tr><td colspan="4" style="text-align:center;">로딩중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
     <!-- 주차별 매출 그래프 -->
     <div class="section">
         <div class="section-header">
@@ -1609,230 +2335,35 @@
     <!-- 카테고리 매출 테이블 -->
     <div class="section">
         <div class="section-header">
-            <h3><span class="emoji">📊</span>카테고리별 매출 분석 <span class="unit-note">(단위: 백만원 / 장)</span></h3>
+            <h3><span class="emoji">📊</span>카테고리별 매출 분석 <span class="unit-note">(매출/입고: 백만원, 판매율: %)</span></h3>
         </div>
         <div class="table-wrapper">
-            <table id="categoryTable" class="two-row-header compact-table category-table">
+            <table id="categoryTable" class="category-analysis-table">
                 <thead>
                     <tr class="header-row-1">
-                        <th rowspan="2" data-sort="category">카테고리</th>
-                        <th colspan="3" class="group-header">매출</th>
-                        <th colspan="3" class="group-header">판매수량</th>
-                        <th colspan="3" class="group-header">입고금액</th>
-                        <th colspan="3" class="group-header">판매율</th>
+                        <th rowspan="2" class="th-category">카테고리</th>
+                        <th colspan="3" class="th-group th-sales">매출</th>
+                        <th colspan="3" class="th-group th-qty">판매수량</th>
+                        <th colspan="3" class="th-group th-intag">입고금액</th>
+                        <th colspan="3" class="th-group th-rate">판매율</th>
                     </tr>
                     <tr class="header-row-2">
-                        <th data-sort="sales24" style="text-align:right">24FW</th>
-                        <th data-sort="sales25" style="text-align:right">25FW</th>
-                        <th data-sort="growth" style="text-align:right">성장률</th>
-                        <th data-sort="qty24" style="text-align:right">24FW</th>
-                        <th data-sort="qty25" style="text-align:right">25FW</th>
-                        <th data-sort="qtydiff" style="text-align:right">증감</th>
-                        <th data-sort="intag24" style="text-align:right">24FW</th>
-                        <th data-sort="intag25" style="text-align:right">25FW</th>
-                        <th data-sort="intaggrowth" style="text-align:right">성장률</th>
-                        <th data-sort="rate24" style="text-align:right">24FW</th>
-                        <th data-sort="rate25" style="text-align:right">25FW</th>
-                        <th data-sort="ratechange" style="text-align:right">변화</th>
-                    </tr>
+                        <th class="th-sub">24FW</th>
+                        <th class="th-sub">25FW</th>
+                        <th class="th-sub">성장률</th>
+                        <th class="th-sub">24FW</th>
+                        <th class="th-sub">25FW</th>
+                        <th class="th-sub">증감</th>
+                        <th class="th-sub">24FW</th>
+                        <th class="th-sub">25FW</th>
+                        <th class="th-sub">성장률</th>
+                        <th class="th-sub">24FW</th>
+                        <th class="th-sub">25FW</th>
+                        <th class="th-sub">변화</th>
+        </tr>
                 </thead>
-                <tbody>
-                    
-        <tr class="total-row" data-sales24="2524674030" data-sales25="5952016840" data-growth="135.7538743328381" data-qty24="4409" data-qty25="8642" data-intag24="19804815000" data-intag25="33332775000" data-rate24="14.776229921864962" data-rate25="19.812190854196807" data-ratechange="5.035960932331845">
-            <td class="category-cell">TOTAL</td>
-            <td class="number-cell">2,525</td>
-            <td class="number-cell">5,952</td>
-            <td class="number-cell positive">+135.8%</td>
-            <td class="number-cell">4,409</td>
-            <td class="number-cell">8,642</td>
-            <td class="number-cell positive">+4,233</td>
-            <td class="number-cell">19,805</td>
-            <td class="number-cell">33,333</td>
-            <td class="number-cell positive">+68.3%</td>
-            <td class="number-cell">14.8%</td>
-            <td class="number-cell">19.8%</td>
-            <td class="number-cell positive">+5.0%p</td>
-        </tr>
-        <tr class="parent-row women-row" data-sales24="2060759180" data-sales25="5205485490" data-growth="152.60037856534018" data-qty24="3095" data-qty25="6825" data-intag24="12978367000" data-intag25="24003150000" data-rate24="18.36006024486748" data-rate25="24.082172548186385" data-ratechange="5.722112303318905">
-            <td class="category-cell">WOMEN</td>
-            <td class="number-cell">2,061</td>
-            <td class="number-cell">5,205</td>
-            <td class="number-cell positive">+152.6%</td>
-            <td class="number-cell">3,095</td>
-            <td class="number-cell">6,825</td>
-            <td class="number-cell positive">+3,730</td>
-            <td class="number-cell">12,978</td>
-            <td class="number-cell">24,003</td>
-            <td class="number-cell positive">+85.0%</td>
-            <td class="number-cell">18.4%</td>
-            <td class="number-cell">24.1%</td>
-            <td class="number-cell positive">+5.7%p</td>
-        </tr>
-        <tr class="sub-row women-sub-row highlight-row" data-sales24="1461827580" data-sales25="4226518320" data-growth="189.12563819599026" data-qty24="1427" data-qty25="3818" data-intag24="8953920000" data-intag25="17572850000" data-rate24="18.94734373324756" data-rate25="26.6434869699565" data-ratechange="7.696143236708938">
-            <td class="category-cell"><span class="indent"></span>⭐ DOWN</td>
-            <td class="number-cell">1,462</td>
-            <td class="number-cell">4,227</td>
-            <td class="number-cell positive">+189.1%</td>
-            <td class="number-cell">1,427</td>
-            <td class="number-cell">3,818</td>
-            <td class="number-cell positive">+2,391</td>
-            <td class="number-cell">8,954</td>
-            <td class="number-cell">17,573</td>
-            <td class="number-cell positive">+96.3%</td>
-            <td class="number-cell">18.9%</td>
-            <td class="number-cell">26.6%</td>
-            <td class="number-cell positive">+7.7%p</td>
-        </tr>
-        <tr class="sub-row women-sub-row" data-sales24="313920500" data-sales25="320965850" data-growth="2.244310263267292" data-qty24="469" data-qty25="553" data-intag24="1647910000" data-intag25="2045150000" data-rate24="21.762717624142095" data-rate25="17.834877637337115" data-ratechange="-3.9278399868049796">
-            <td class="category-cell"><span class="indent"></span>OUTER</td>
-            <td class="number-cell">314</td>
-            <td class="number-cell">321</td>
-            <td class="number-cell neutral">+2.2%</td>
-            <td class="number-cell">469</td>
-            <td class="number-cell">553</td>
-            <td class="number-cell positive">+84</td>
-            <td class="number-cell">1,648</td>
-            <td class="number-cell">2,045</td>
-            <td class="number-cell positive">+24.1%</td>
-            <td class="number-cell">21.8%</td>
-            <td class="number-cell">17.8%</td>
-            <td class="number-cell negative">-3.9%p</td>
-        </tr>
-        <tr class="sub-row women-sub-row" data-sales24="131856290" data-sales25="165636230" data-growth="25.618755085555645" data-qty24="595" data-qty25="536" data-intag24="922320000" data-intag25="1442270000" data-rate24="16.54306531355712" data-rate25="12.86998966906335" data-ratechange="-3.6730756444937676">
-            <td class="category-cell"><span class="indent"></span>TOP</td>
-            <td class="number-cell">132</td>
-            <td class="number-cell">166</td>
-            <td class="number-cell positive">+25.6%</td>
-            <td class="number-cell">595</td>
-            <td class="number-cell">536</td>
-            <td class="number-cell negative">-59</td>
-            <td class="number-cell">922</td>
-            <td class="number-cell">1,442</td>
-            <td class="number-cell positive">+56.4%</td>
-            <td class="number-cell">16.5%</td>
-            <td class="number-cell">12.9%</td>
-            <td class="number-cell negative">-3.7%p</td>
-        </tr>
-        <tr class="sub-row women-sub-row" data-sales24="77654970" data-sales25="258939700" data-growth="233.44897306637296" data-qty24="262" data-qty25="882" data-intag24="738670000" data-intag25="1313340000" data-rate24="12.085234272408519" data-rate25="22.125268399652796" data-ratechange="10.040034127244278">
-            <td class="category-cell"><span class="indent"></span>BOTTOM</td>
-            <td class="number-cell">78</td>
-            <td class="number-cell">259</td>
-            <td class="number-cell positive">+233.4%</td>
-            <td class="number-cell">262</td>
-            <td class="number-cell">882</td>
-            <td class="number-cell positive">+620</td>
-            <td class="number-cell">739</td>
-            <td class="number-cell">1,313</td>
-            <td class="number-cell positive">+77.8%</td>
-            <td class="number-cell">12.1%</td>
-            <td class="number-cell">22.1%</td>
-            <td class="number-cell positive">+10.0%p</td>
-        </tr>
-        <tr class="parent-row men-row" data-sales24="463914850" data-sales25="746531350" data-growth="60.91990803915848" data-qty24="1314" data-qty25="1817" data-intag24="6826448000" data-intag25="9329625000" data-rate24="7.96269157840212" data-rate25="8.826431930543832" data-ratechange="0.8637403521417113">
-            <td class="category-cell">MEN</td>
-            <td class="number-cell">464</td>
-            <td class="number-cell">747</td>
-            <td class="number-cell positive">+60.9%</td>
-            <td class="number-cell">1,314</td>
-            <td class="number-cell">1,817</td>
-            <td class="number-cell positive">+503</td>
-            <td class="number-cell">6,826</td>
-            <td class="number-cell">9,330</td>
-            <td class="number-cell positive">+36.7%</td>
-            <td class="number-cell">8.0%</td>
-            <td class="number-cell">8.8%</td>
-            <td class="number-cell positive">+0.9%p</td>
-        </tr>
-        <tr class="sub-row men-sub-row" data-sales24="262694070" data-sales25="418264700" data-growth="59.221218811677026" data-qty24="305" data-qty25="441" data-intag24="4001040000" data-intag25="4724090000" data-rate24="7.746735848679344" data-rate25="9.739230200948754" data-ratechange="1.9924943522694099">
-            <td class="category-cell"><span class="indent"></span>DOWN</td>
-            <td class="number-cell">263</td>
-            <td class="number-cell">418</td>
-            <td class="number-cell positive">+59.2%</td>
-            <td class="number-cell">305</td>
-            <td class="number-cell">441</td>
-            <td class="number-cell positive">+136</td>
-            <td class="number-cell">4,001</td>
-            <td class="number-cell">4,724</td>
-            <td class="number-cell positive">+18.1%</td>
-            <td class="number-cell">7.7%</td>
-            <td class="number-cell">9.7%</td>
-            <td class="number-cell positive">+2.0%p</td>
-        </tr>
-        <tr class="sub-row men-sub-row" data-sales24="34172500" data-sales25="66917640" data-growth="95.82307410929842" data-qty24="71" data-qty25="151" data-intag24="738000000" data-intag25="1349980000" data-rate24="5.373983739837398" data-rate25="5.701565949125173" data-ratechange="0.32758220928777426">
-            <td class="category-cell"><span class="indent"></span>OUTER</td>
-            <td class="number-cell">34</td>
-            <td class="number-cell">67</td>
-            <td class="number-cell positive">+95.8%</td>
-            <td class="number-cell">71</td>
-            <td class="number-cell">151</td>
-            <td class="number-cell positive">+80</td>
-            <td class="number-cell">738</td>
-            <td class="number-cell">1,350</td>
-            <td class="number-cell positive">+82.9%</td>
-            <td class="number-cell">5.4%</td>
-            <td class="number-cell">5.7%</td>
-            <td class="number-cell positive">+0.3%p</td>
-        </tr>
-        <tr class="sub-row men-sub-row" data-sales24="47981120" data-sales25="58488170" data-growth="21.898300831660453" data-qty24="275" data-qty25="230" data-intag24="804210000" data-intag25="831880000" data-rate24="7.26551522612253" data-rate25="7.86651920950137" data-ratechange="0.6010039833788401">
-            <td class="category-cell"><span class="indent"></span>TOP</td>
-            <td class="number-cell">48</td>
-            <td class="number-cell">58</td>
-            <td class="number-cell positive">+21.9%</td>
-            <td class="number-cell">275</td>
-            <td class="number-cell">230</td>
-            <td class="number-cell negative">-45</td>
-            <td class="number-cell">804</td>
-            <td class="number-cell">832</td>
-            <td class="number-cell positive">+3.4%</td>
-            <td class="number-cell">7.3%</td>
-            <td class="number-cell">7.9%</td>
-            <td class="number-cell positive">+0.6%p</td>
-        </tr>
-        <tr class="sub-row men-sub-row" data-sales24="14979000" data-sales25="39673370" data-growth="164.859937245477" data-qty24="63" data-qty25="151" data-intag24="337670000" data-intag25="624560000" data-rate24="5.194420588148192" data-rate25="7.129819392852569" data-ratechange="1.9353988047043762">
-            <td class="category-cell"><span class="indent"></span>BOTTOM</td>
-            <td class="number-cell">15</td>
-            <td class="number-cell">40</td>
-            <td class="number-cell positive">+164.9%</td>
-            <td class="number-cell">63</td>
-            <td class="number-cell">151</td>
-            <td class="number-cell positive">+88</td>
-            <td class="number-cell">338</td>
-            <td class="number-cell">625</td>
-            <td class="number-cell positive">+85.0%</td>
-            <td class="number-cell">5.2%</td>
-            <td class="number-cell">7.1%</td>
-            <td class="number-cell positive">+1.9%p</td>
-        </tr>
-        <tr class="bold-category" data-sales24="116026480" data-sales25="294206600" data-growth="153.56849574338548" data-qty24="625" data-qty25="1383" data-intag24="932925000" data-intag25="2193740000" data-rate24="14.167483988530696" data-rate25="14.806130170393939" data-ratechange="0.6386461818632423">
-            <td class="category-cell">ACC</td>
-            <td class="number-cell">116</td>
-            <td class="number-cell">294</td>
-            <td class="number-cell positive">+153.6%</td>
-            <td class="number-cell">625</td>
-            <td class="number-cell">1,383</td>
-            <td class="number-cell positive">+758</td>
-            <td class="number-cell">933</td>
-            <td class="number-cell">2,194</td>
-            <td class="number-cell positive">+135.2%</td>
-            <td class="number-cell">14.2%</td>
-            <td class="number-cell">14.8%</td>
-            <td class="number-cell positive">+0.6%p</td>
-        </tr>
-        <tr class="bold-category" data-sales24="63561520" data-sales25="102406260" data-growth="61.11361087651774" data-qty24="317" data-qty25="497" data-intag24="728150000" data-intag25="1234915000" data-rate24="9.839044152990455" data-rate25="8.838260123166371" data-ratechange="-1.000784029824084">
-            <td class="category-cell">SHOES</td>
-            <td class="number-cell">64</td>
-            <td class="number-cell">102</td>
-            <td class="number-cell positive">+61.1%</td>
-            <td class="number-cell">317</td>
-            <td class="number-cell">497</td>
-            <td class="number-cell positive">+180</td>
-            <td class="number-cell">728</td>
-            <td class="number-cell">1,235</td>
-            <td class="number-cell positive">+69.6%</td>
-            <td class="number-cell">9.8%</td>
-            <td class="number-cell">8.8%</td>
-            <td class="number-cell negative">-1.0%p</td>
-        </tr>
+                <tbody id="categorySummaryTableBody">
+                    <tr><td colspan="13" style="text-align:center; padding:20px;">데이터 로딩 중...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -1845,217 +2376,97 @@
             <span class="toggle-icon">▼</span>
         </div>
         <div class="detail-tables" id="detailTables">
-            <div class="detail-table">
+            <div class="detail-table" id="fabricCard">
                 <div class="left-section">
                     <h4>🎨 Fabric 분석</h4>
-                    <div class="ai-insights">
-                        <div class="insights-positive">
-                            <p>✅ <strong>TEXTURED</strong> 매출 1위 (1,666백만원) + 고효율 (<span class="positive">+17.1%p</span>)</p>
-                            <p>✅ <strong>SHINY</strong> 고효율 (매출 23.1% vs 입고 6.4%, <span class="positive">+16.7%p</span>)</p>
-                            <p>💡 <strong>SOFT-MATTE</strong> 급성장 (+769.9%) - 입고 확대 우선 검토</p>
-                        </div>
-                        <div class="insights-warnings">
-                            <p class="warning">⚠️ <strong>SOFT-MATTE</strong> 저효율 (입고 36.4% 대비 매출 29.9%, <span class="negative">-6.5%p</span>)</p>
-                            <p class="danger">🚨 <strong>MATTE</strong> 매출 하락 (-54.8%) + 저효율 - 입고 축소 권고</p>
-                        </div>
+                    <div class="ai-insights" id="fabricInsights">
+                        <p>데이터 로딩 중...</p>
                     </div>
                 </div>
                 <div class="right-section">
-                    <h4>📊 입고 대비 매출 효율 분석</h4>
+                    <h4>📊 전년대비 매출 효율 분석</h4>
                 <table>
                     <thead>
                         <tr>
                                 <th rowspan="2">속성</th>
                                 <th colspan="2">매출 (백만원)</th>
                                 <th rowspan="2">성장률</th>
-                                <th colspan="3">25FW 효율 분석 (%)</th>
-                            </tr>
+                                <th colspan="2">판매율 (%)</th>
+                                <th rowspan="2">변화</th>
+                        </tr>
                             <tr>
                                 <th>24FW</th>
                                 <th>25FW</th>
-                                <th>매출비중</th>
-                                <th>입고비중</th>
-                                <th>효율차이</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        <tr>
-            <td><strong>TEXTURED</strong></td>
-                                <td>396</td>
-                                <td>1,666</td>
-                                <td class="positive">+320.9%</td>
-                                <td>39.4%</td>
-                                <td>22.3%</td>
-                                <td class="efficiency-high">+17.1%p ✅</td>
+                                <th>24FW</th>
+                                <th>25FW</th>
         </tr>
-        <tr>
-            <td><strong>SOFT-MATTE</strong></td>
-                                <td>145</td>
-                                <td>1,263</td>
-                                <td class="positive">+769.9%</td>
-                                <td>29.9%</td>
-                                <td>36.4%</td>
-                                <td class="efficiency-low">-6.5%p ⚠️</td>
-        </tr>
-        <tr>
-            <td><strong>SHINY</strong></td>
-                                <td>612</td>
-                                <td>976</td>
-                                <td class="positive">+59.6%</td>
-                                <td>23.1%</td>
-                                <td>6.4%</td>
-                                <td class="efficiency-high">+16.7%p ✅</td>
-        </tr>
-        <tr>
-            <td><strong>SEMI-SHINY</strong></td>
-                                <td>202</td>
-                                <td>273</td>
-                                <td class="positive">+35.5%</td>
-                                <td>6.5%</td>
-                                <td>3.8%</td>
-                                <td class="efficiency-high">+2.7%p ✅</td>
-        </tr>
-        <tr>
-            <td><strong>MATTE</strong></td>
-                                <td>108</td>
-                                <td>49</td>
-                                <td class="negative">-54.8%</td>
-                                <td>1.2%</td>
-                                <td>31.1%</td>
-                                <td class="efficiency-low">-29.9%p ⚠️</td>
-        </tr>
+                        </thead>
+                        <tbody id="fabricTableBody">
+                            <!-- 동적 로딩 -->
                     </tbody>
                 </table>
                 </div>
             </div>
             
-            <div class="detail-table">
+            <div class="detail-table" id="lengthCard">
                 <div class="left-section">
                     <h4>📏 Length 분석</h4>
-                    <div class="ai-insights">
-                        <div class="insights-positive">
-                            <p>✅ <strong>MIDDLE</strong> 매출 1위 (2,167백만원) + 고효율 (<span class="positive">+10.4%p</span>)</p>
-                            <p>✅ <strong>LONG</strong> 고효율 (매출 24.4% vs 입고 19.5%, <span class="positive">+4.9%p</span>)</p>
-                            <p>💡 <strong>SHORT</strong> 최고 성장률 (+550.5%) - 트렌드 상승</p>
-                        </div>
-                        <div class="insights-warnings">
-                            <p class="warning">⚠️ <strong>SHORT</strong> 저효율 (입고 39.6% 대비 매출 24.3%, <span class="negative">-15.3%p</span>)</p>
-                            <p class="danger">🚨 SHORT 입고 과다 - 판매 촉진 또는 입고 조정 필요</p>
-                        </div>
+                    <div class="ai-insights" id="lengthInsights">
+                        <p>데이터 로딩 중...</p>
                     </div>
                 </div>
                 <div class="right-section">
-                    <h4>📊 입고 대비 매출 효율 분석</h4>
+                    <h4>📊 전년대비 매출 효율 분석</h4>
                 <table>
                     <thead>
                         <tr>
                                 <th rowspan="2">속성</th>
                                 <th colspan="2">매출 (백만원)</th>
                                 <th rowspan="2">성장률</th>
-                                <th colspan="3">25FW 효율 분석 (%)</th>
-                            </tr>
+                                <th colspan="2">판매율 (%)</th>
+                                <th rowspan="2">변화</th>
+                        </tr>
                             <tr>
                                 <th>24FW</th>
                                 <th>25FW</th>
-                                <th>매출비중</th>
-                                <th>입고비중</th>
-                                <th>효율차이</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        <tr>
-            <td><strong>MIDDLE</strong></td>
-                                <td>455</td>
-                                <td>2,167</td>
-                                <td class="positive">+375.8%</td>
-                                <td>51.3%</td>
-                                <td>40.9%</td>
-                                <td class="efficiency-high">+10.4%p ✅</td>
+                                <th>24FW</th>
+                                <th>25FW</th>
         </tr>
-        <tr>
-            <td><strong>LONG</strong></td>
-                                <td>543</td>
-                                <td>1,032</td>
-                                <td class="positive">+90.0%</td>
-                                <td>24.4%</td>
-                                <td>19.5%</td>
-                                <td class="efficiency-high">+4.9%p ✅</td>
-        </tr>
-        <tr>
-            <td><strong>SHORT</strong></td>
-                                <td>158</td>
-                                <td>1,028</td>
-                                <td class="positive">+550.5%</td>
-                                <td>24.3%</td>
-                                <td>39.6%</td>
-                                <td class="efficiency-low">-15.3%p ⚠️</td>
-        </tr>
+                        </thead>
+                        <tbody id="lengthTableBody">
+                            <!-- 동적 로딩 -->
                     </tbody>
                 </table>
                 </div>
             </div>
             
-            <div class="detail-table">
+            <div class="detail-table" id="downweightCard">
                 <div class="left-section">
                     <h4>⚖️ Downweight 분석</h4>
-                    <div class="ai-insights">
-                        <div class="insights-positive">
-                            <p>✅ <strong>HEAVY</strong> 매출 1위 (2,176백만원) + 최고효율 (<span class="positive">+24.5%p</span>)</p>
-                            <p>✅ <strong>LIGHT</strong> 균형 (매출 33.4% ≈ 입고 29.8%, <span class="positive">+3.6%p</span>)</p>
-                            <p>💡 <strong>HEAVY</strong> 프리미엄 라인 - 입고 확대 적극 권고</p>
-                        </div>
-                        <div class="insights-warnings">
-                            <p class="warning">⚠️ <strong>MEDIUM</strong> 저효율 (입고 43.2% 대비 매출 15.1%, <span class="negative">-28.1%p</span>)</p>
-                            <p class="danger">🚨 MEDIUM 입고 과다 - 대폭 축소 또는 판촉 필요</p>
-                        </div>
+                    <div class="ai-insights" id="downweightInsights">
+                        <p>데이터 로딩 중...</p>
                     </div>
                 </div>
                 <div class="right-section">
-                    <h4>📊 입고 대비 매출 효율 분석</h4>
+                    <h4>📊 전년대비 매출 효율 분석</h4>
                 <table>
                     <thead>
                         <tr>
                                 <th rowspan="2">속성</th>
                                 <th colspan="2">매출 (백만원)</th>
                                 <th rowspan="2">성장률</th>
-                                <th colspan="3">25FW 효율 분석 (%)</th>
+                                <th colspan="2">판매율 (%)</th>
+                                <th rowspan="2">변화</th>
                             </tr>
                             <tr>
                                 <th>24FW</th>
                                 <th>25FW</th>
-                                <th>매출비중</th>
-                                <th>입고비중</th>
-                                <th>효율차이</th>
+                                <th>24FW</th>
+                                <th>25FW</th>
                         </tr>
                     </thead>
-                    <tbody>
-        <tr>
-            <td><strong>HEAVY</strong></td>
-                                <td>551</td>
-                                <td>2,176</td>
-                                <td class="positive">+295.2%</td>
-                                <td>51.5%</td>
-                                <td>27.0%</td>
-                                <td class="efficiency-high">+24.5%p ✅</td>
-        </tr>
-        <tr>
-            <td><strong>LIGHT</strong></td>
-                                <td>582</td>
-                                <td>1,413</td>
-                                <td class="positive">+142.9%</td>
-                                <td>33.4%</td>
-                                <td>29.8%</td>
-                                <td class="efficiency-high">+3.6%p ✅</td>
-        </tr>
-        <tr>
-            <td><strong>MEDIUM</strong></td>
-                                <td>330</td>
-                                <td>638</td>
-                                <td class="positive">+93.5%</td>
-                                <td>15.1%</td>
-                                <td>43.2%</td>
-                                <td class="efficiency-low">-28.1%p ⚠️</td>
-        </tr>
+                        <tbody id="downweightTableBody">
+                            <!-- 동적 로딩 -->
                         </tbody>
                     </table>
                 </div>
@@ -2087,8 +2498,8 @@
                             <th colspan="2">판매율 (%)</th>
                             <th rowspan="2">판매율<br>변화</th>
                             <th rowspan="2">효율<br>점수</th>
-                        </tr>
-                        <tr>
+        </tr>
+        <tr>
                             <th>24FW</th>
                             <th>25FW</th>
                             <th>증감</th>
@@ -2096,7 +2507,7 @@
                             <th>25FW</th>
                             <th>24FW</th>
                             <th>25FW</th>
-                        </tr>
+        </tr>
                     </thead>
                     <tbody id="goldenZoneBody">
                         <tr><td colspan="12" style="text-align:center; padding:20px;">데이터 로딩 중...</td></tr>
@@ -2108,46 +2519,82 @@
     
     <!-- 푸터 -->
     <div class="footer">
-        <p>Generated at <strong>2025-11-27 19:57:19</strong> | <span class="version">DUVETICA Weekly Sales Dashboard</span></p>
-        <p>Data Period: Week 36 ~ Week 47 | Source: 24FW & 25FW Sales Data</p>
+        <p>Generated at <strong>2025-11-27 19:57:19</strong> | <span class="version">DUVETICA 주차별 매출 대시보드</span></p>
+        <p>Data Period: 최신 주차 기준 | Source: 24FW & 25FW Sales Data</p>
     </div>
     
     <!-- 맨 위로 버튼 -->
     <button class="scroll-top" onclick="scrollToTop()" id="scrollTopBtn">↑</button>
     
     <script>
-        // 주차별 매출 차트 (애니메이션 강화)
+        // 주차별 매출 차트 인스턴스 (전역 변수)
+        let weeklyChart = null;
+        
+        // 주차별 매출 차트 CSV 로드 및 렌더링
+        async function loadWeeklySalesChart() {
+            try {
+                const response = await fetch('weekly_sales.csv');
+                if (!response.ok) {
+                    throw new Error('weekly_sales.csv 로딩 실패: ' + response.status);
+                }
+                
+                const csvText = await response.text();
+                const lines = csvText.trim().split('\n');
+                
+                const labels = [];
+                const data24 = [];
+                const data25 = [];
+                
+                // CSV 파싱 (헤더 제외) - 모든 주차 데이터 로드
+                // 구조: week_no,sales_24,sales_25
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(',');
+                    const weekNo = cols[0].trim();
+                    
+                    if (weekNo) {
+                        labels.push(weekNo);
+                        data24.push(parseFloat(cols[1]) || 0);
+                        data25.push(parseFloat(cols[2]) || 0);
+                    }
+                }
+                
+                // 기존 차트 제거 후 새로 생성
         const ctx = document.getElementById('weeklyChart').getContext('2d');
-        const chart = new Chart(ctx, {
+                
+                if (weeklyChart) {
+                    weeklyChart.destroy();
+                }
+                
+                weeklyChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['36w', '37w', '38w', '39w', '40w', '41w', '42w', '43w', '44w', '45w', '46w', '47w'],
+                        labels: labels,
                 datasets: [
                     {
                         label: '24FW',
-                        data: [47690500, 68539500, 60311200, 72769000, 122251700, 113146300, 140828850, 163394900, 187805530, 358398170, 380359430, 462369650],
-                        borderColor: '#95a5a6',
-                        backgroundColor: 'rgba(149, 165, 166, 0.1)',
+                                data: data24,
+                                borderColor: '#3498db',
+                                backgroundColor: 'rgba(52, 152, 219, 0.1)',
                         borderWidth: 2,
                         fill: true,
                         tension: 0.4,
                         pointRadius: 5,
                         pointHoverRadius: 8,
-                        pointBackgroundColor: '#95a5a6',
+                                pointBackgroundColor: '#3498db',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2
                     },
                     {
                         label: '25FW',
-                        data: [46161400, 103305170, 139124550, 135830600, 141686710, 240697550, 294099200, 544203130, 881987710, 859142550, 887360090, 1160302990],
-                        borderColor: '#3498db',
-                        backgroundColor: 'rgba(52, 152, 219, 0.15)',
+                                data: data25,
+                                borderColor: '#e74c3c',
+                                backgroundColor: 'rgba(231, 76, 60, 0.15)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.4,
                         pointRadius: 5,
                         pointHoverRadius: 8,
-                        pointBackgroundColor: '#3498db',
+                                pointBackgroundColor: '#e74c3c',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2
                     }
@@ -2193,8 +2640,10 @@
                                 if (tooltipItems.length >= 2) {
                                     const val24 = tooltipItems[0].raw;
                                     const val25 = tooltipItems[1].raw;
+                                            if (val24 > 0) {
                                     const growth = ((val25 - val24) / val24 * 100).toFixed(1);
                                     return '\n성장률: ' + (growth > 0 ? '+' : '') + growth + '%';
+                                            }
                                 }
                                 return '';
                             }
@@ -2226,6 +2675,13 @@
                 }
             }
         });
+                
+                console.log('✅ 주차별 매출 차트 로딩 완료');
+                
+            } catch (error) {
+                console.error('❌ 주차별 매출 차트 로딩 실패:', error);
+            }
+        }
         
         // 테이블 정렬 기능
         document.querySelectorAll('#categoryTable th[data-sort]').forEach(th => {
@@ -2365,9 +2821,307 @@
             // TOP 10 판매율 제품 데이터 로드
             loadBestSellRate();
             
+            // TOP 10 매출 제품 데이터 로드
+            loadBestProducts();
+            
             // KPI 요약 데이터 로드
             loadKpiSummary();
+            
+            // 주차별 매출 차트 로드
+            loadWeeklySalesChart();
+            
+            // 카테고리 매출 분석 로드
+            loadCategorySummary();
+            
+            // Women Down 상세 분석 로드
+            loadWomenDownDetail();
+            
+            // 카테고리별 BEST 상품 로드 (누적)
+            loadWomenOuterBest();
+            loadWomenTopBest();
+            loadWomenBottomBest();
+            loadMenDownBest();
+            loadMenOuterBest();
+            loadMenTopBest();
+            loadMenBottomBest();
+            loadAccBest();
+            loadShoesBest();
+            
+            // 주간 BEST 상품 로드
+            loadWeeklyWomenDownBest();
+            loadWeeklyWomenOuterBest();
+            loadWeeklyWomenTopBest();
+            loadWeeklyWomenBottomBest();
+            loadWeeklyMenDownBest();
+            loadWeeklyMenOuterBest();
+            loadWeeklyMenTopBest();
+            loadWeeklyMenBottomBest();
+            loadWeeklyAccBest();
+            loadWeeklyShoesBest();
+            
+            // 누적 BEST 섹션 접기/펼치기
+            document.getElementById('toggleCumulativeBest').addEventListener('click', function() {
+                const content = document.getElementById('cumulativeBestContent');
+                const btn = this;
+                
+                if (content.style.display === 'none') {
+                    content.style.display = 'grid';
+                    btn.textContent = '접기 ▲';
+                } else {
+                    content.style.display = 'none';
+                    btn.textContent = '펼치기 ▼';
+                }
+            });
+            
+            // 주간 BEST 섹션 접기/펼치기
+            document.getElementById('toggleWeeklyBest').addEventListener('click', function() {
+                const content = document.getElementById('weeklyBestContent');
+                const btn = this;
+                
+                if (content.style.display === 'none') {
+                    content.style.display = 'grid';
+                    btn.textContent = '접기 ▲';
+                } else {
+                    content.style.display = 'none';
+                    btn.textContent = '펼치기 ▼';
+                }
+            });
         });
+        
+        // 카테고리별 BEST 상품 공통 로드 함수 (테이블 형식)
+        async function loadCategoryBestTable(csvFile, tbodyId) {
+            try {
+                const response = await fetch(csvFile);
+                if (!response.ok) {
+                    throw new Error('HTTP error: ' + response.status);
+                }
+                const csvText = await response.text();
+                const rows = csvText.trim().split('\n');
+                
+                if (rows.length < 2) {
+                    throw new Error('CSV 데이터가 비어있음');
+                }
+                
+                // CSV 컬럼: rank,style_name,gender,category,fabric,length,downweight,sell_amount,sell_qty
+                // 인덱스:    0     1          2      3        4      5      6          7            8
+                const data = rows.slice(1).map(row => {
+                    const values = row.split(',');
+                    return {
+                        rank: parseInt(values[0]) || 0,
+                        styleName: values[1] || '',
+                        gender: values[2] || '',
+                        category: values[3] || '',
+                        fabric: values[4] || '-',
+                        length: values[5] || '-',
+                        downweight: values[6] || '-',
+                        sellAmount: parseFloat(values[7]) || 0,
+                        sellQty: parseInt(values[8]) || 0
+                    };
+                });
+                
+                // 디버깅: 첫 번째 행 데이터 출력
+                if (data.length > 0) {
+                    console.log(`📊 ${csvFile} 첫 번째 행:`, data[0]);
+                    console.log(`   매출액: ${data[0].sellAmount}, 판매수량: ${data[0].sellQty}`);
+                }
+                
+                renderCategoryBestTable(data, tbodyId);
+                console.log(`✅ ${csvFile} 로드 완료 (${data.length}개 행)`);
+            } catch (error) {
+                console.error(`❌ ${csvFile} 로드 실패:`, error.message);
+                document.getElementById(tbodyId).innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#e74c3c;">데이터 로딩 실패</td></tr>';
+            }
+        }
+        
+        // 카테고리별 BEST 상품 테이블 렌더링
+        function renderCategoryBestTable(data, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            
+            let html = '';
+            
+            data.forEach(item => {
+                // 순위 표시 (1~3위 메달, 4위 이후 숫자)
+                let rankDisplay = '';
+                if (item.rank === 1) rankDisplay = '🥇';
+                else if (item.rank === 2) rankDisplay = '🥈';
+                else if (item.rank === 3) rankDisplay = '🥉';
+                else rankDisplay = item.rank;
+                
+                // 매출액 (백만원 단위, 소수점 1자리)
+                const salesM = (item.sellAmount / 1000000).toFixed(1);
+                
+                // 판매수량
+                const salesQty = item.sellQty || 0;
+                
+                html += `
+                    <tr>
+                        <td class="rank-cell">${rankDisplay}</td>
+                        <td class="name-cell" title="${item.styleName}">${item.styleName}</td>
+                        <td class="sales-cell">${salesM}</td>
+                        <td class="qty-cell">${salesQty}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        // 각 카테고리별 로드 함수
+        function loadWomenOuterBest() {
+            loadCategoryBestTable('women_outer_best.csv', 'womenOuterBestBody');
+        }
+        
+        function loadWomenTopBest() {
+            loadCategoryBestTable('women_top_best.csv', 'womenTopBestBody');
+        }
+        
+        function loadWomenBottomBest() {
+            loadCategoryBestTable('women_bottom_best.csv', 'womenBottomBestBody');
+        }
+        
+        function loadMenDownBest() {
+            loadCategoryBestTable('men_down_best.csv', 'menDownBestBody');
+        }
+        
+        function loadMenOuterBest() {
+            loadCategoryBestTable('men_outer_best.csv', 'menOuterBestBody');
+        }
+        
+        function loadMenTopBest() {
+            loadCategoryBestTable('men_top_best.csv', 'menTopBestBody');
+        }
+        
+        function loadMenBottomBest() {
+            loadCategoryBestTable('men_bottom_best.csv', 'menBottomBestBody');
+        }
+        
+        function loadAccBest() {
+            loadCategoryBestTable('acc_best.csv', 'accBestBody');
+        }
+        
+        function loadShoesBest() {
+            loadCategoryBestTable('shoes_best.csv', 'shoesBestBody');
+        }
+        
+        // 주간 BEST 상품 공통 로드 함수
+        async function loadWeeklyBestTable(csvFile, tbodyId, categoryName) {
+            console.log(`📂 주간 BEST 로드 시작: ${csvFile}`);
+            
+            try {
+                const response = await fetch(csvFile);
+                console.log(`   응답 상태: ${response.status} (${csvFile})`);
+                
+                if (!response.ok) {
+                    throw new Error('HTTP error: ' + response.status);
+                }
+                
+                const csvText = await response.text();
+                const rows = csvText.trim().split('\n');
+                
+                // 헤더만 있는 경우 (데이터 없음)
+                if (rows.length < 2) {
+                    console.log(`   ⚠️ ${categoryName}: 데이터 없음 (헤더만 존재)`);
+                    document.getElementById(tbodyId).innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999; font-size:0.7rem; padding:12px;">이번 주 데이터 없음</td></tr>';
+                    return;
+                }
+                
+                // CSV 컬럼: rank,style_name,sell_amount,sell_qty
+                const data = rows.slice(1).map(row => {
+                    const values = row.split(',');
+                    return {
+                        rank: parseInt(values[0]) || 0,
+                        styleName: values[1] || '',
+                        sellAmount: parseFloat(values[2]) || 0,
+                        sellQty: parseInt(values[3]) || 0
+                    };
+                }).filter(item => item.styleName); // 빈 행 제거
+                
+                console.log(`   ✅ ${categoryName}: ${data.length}개 로드 완료`);
+                if (data.length > 0) {
+                    console.log(`      TOP 1: ${data[0].styleName} (매출: ${data[0].sellAmount})`);
+                }
+                
+                renderWeeklyBestTable(data, tbodyId);
+            } catch (error) {
+                console.error(`   ❌ ${categoryName} 로드 실패:`, error.message);
+                console.log(`      요청 경로: ${csvFile}`);
+                document.getElementById(tbodyId).innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999; font-size:0.7rem; padding:12px;">이번 주 데이터 없음</td></tr>';
+            }
+        }
+        
+        // 주간 BEST 테이블 렌더링
+        function renderWeeklyBestTable(data, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999; font-size:0.7rem; padding:12px;">이번 주 데이터 없음</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            
+            data.forEach(item => {
+                // 1위만 메달, 나머지 숫자
+                const rankDisplay = item.rank === 1 ? '🥇' : item.rank;
+                
+                // 매출액 (백만원 단위)
+                const salesM = (item.sellAmount / 1000000).toFixed(1);
+                
+                html += `
+                    <tr>
+                        <td class="rank-cell">${rankDisplay}</td>
+                        <td class="name-cell" title="${item.styleName}">${item.styleName}</td>
+                        <td class="sales-cell">${salesM}</td>
+                        <td class="qty-cell">${item.sellQty}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        // 주간 BEST 개별 로드 함수
+        function loadWeeklyWomenDownBest() {
+            loadWeeklyBestTable('weekly_women_down_best.csv', 'weeklyWomenDownBody', '여성 DOWN');
+        }
+        
+        function loadWeeklyWomenOuterBest() {
+            loadWeeklyBestTable('weekly_women_outer_best.csv', 'weeklyWomenOuterBody', '여성 OUTER');
+        }
+        
+        function loadWeeklyWomenTopBest() {
+            loadWeeklyBestTable('weekly_women_top_best.csv', 'weeklyWomenTopBody', '여성 TOP');
+        }
+        
+        function loadWeeklyWomenBottomBest() {
+            loadWeeklyBestTable('weekly_women_bottom_best.csv', 'weeklyWomenBottomBody', '여성 BOTTOM');
+        }
+        
+        function loadWeeklyMenDownBest() {
+            loadWeeklyBestTable('weekly_men_down_best.csv', 'weeklyMenDownBody', '남성 DOWN');
+        }
+        
+        function loadWeeklyMenOuterBest() {
+            loadWeeklyBestTable('weekly_men_outer_best.csv', 'weeklyMenOuterBody', '남성 OUTER');
+        }
+        
+        function loadWeeklyMenTopBest() {
+            loadWeeklyBestTable('weekly_men_top_best.csv', 'weeklyMenTopBody', '남성 TOP');
+        }
+        
+        function loadWeeklyMenBottomBest() {
+            loadWeeklyBestTable('weekly_men_bottom_best.csv', 'weeklyMenBottomBody', '남성 BOTTOM');
+        }
+        
+        function loadWeeklyAccBest() {
+            loadWeeklyBestTable('weekly_acc_best.csv', 'weeklyAccBody', 'ACC');
+        }
+        
+        function loadWeeklyShoesBest() {
+            loadWeeklyBestTable('weekly_shoes_best.csv', 'weeklyShoesBody', 'SHOES');
+        }
         
         // Golden Zone 인라인 데이터 (fetch 실패 시 폴백용)
         const goldenZoneData = [
@@ -2601,6 +3355,329 @@
             
             insightsDiv.innerHTML = insights;
             console.log('Golden Zone AI 인사이트 생성 완료');
+        }
+        
+        // Women Down 상세 분석 CSV 로드 및 렌더링
+        async function loadWomenDownDetail() {
+            try {
+                const response = await fetch('women_down_detail.csv');
+                if (!response.ok) {
+                    throw new Error('women_down_detail.csv 로딩 실패: ' + response.status);
+                }
+                
+                const csvText = await response.text();
+                const lines = csvText.trim().split('\n');
+                
+                // CSV 파싱: attribute_type,attribute_value,sales_24,sales_25,growth_rate,sell_rate_24,sell_rate_25
+                const data = { fabric: [], length: [], downweight: [] };
+                
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(',');
+                    const type = cols[0].trim();
+                    const item = {
+                        value: cols[1].trim(),
+                        sales_24: parseFloat(cols[2]) || 0,
+                        sales_25: parseFloat(cols[3]) || 0,
+                        growth_rate: parseFloat(cols[4]) || 0,
+                        sell_rate_24: parseFloat(cols[5]) || 0,
+                        sell_rate_25: parseFloat(cols[6]) || 0
+                    };
+                    item.sell_rate_change = item.sell_rate_25 - item.sell_rate_24;
+                    
+                    if (data[type]) {
+                        data[type].push(item);
+                    }
+                }
+                
+                // 각 속성별 테이블 및 인사이트 렌더링
+                renderWomenDownTable('fabric', data.fabric, 'fabricTableBody', 'fabricInsights');
+                renderWomenDownTable('length', data.length, 'lengthTableBody', 'lengthInsights');
+                renderWomenDownTable('downweight', data.downweight, 'downweightTableBody', 'downweightInsights');
+                
+                console.log('✅ Women Down 상세 분석 로딩 완료');
+                
+            } catch (error) {
+                console.error('❌ Women Down 상세 분석 로딩 실패:', error);
+                ['fabricTableBody', 'lengthTableBody', 'downweightTableBody'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#e74c3c;">데이터 로딩 실패</td></tr>';
+                });
+            }
+        }
+        
+        // Women Down 테이블 렌더링 함수
+        function renderWomenDownTable(type, items, tbodyId, insightsId) {
+            const tbody = document.getElementById(tbodyId);
+            const insightsEl = document.getElementById(insightsId);
+            
+            if (!tbody || !insightsEl || items.length === 0) return;
+            
+            // 25FW 매출 합계 계산 (비중 계산용)
+            const totalSales25 = items.reduce((sum, item) => sum + item.sales_25, 0);
+            
+            // 매출 기준 정렬
+            const sortedItems = [...items].sort((a, b) => b.sales_25 - a.sales_25);
+            
+            // 테이블 렌더링
+            tbody.innerHTML = '';
+            sortedItems.forEach(item => {
+                const salesPercent = totalSales25 > 0 ? (item.sales_25 / totalSales25 * 100) : 0;
+                const growthClass = item.growth_rate >= 0 ? 'positive' : 'negative';
+                const changeClass = item.sell_rate_change >= 0 ? 'efficiency-high' : 'efficiency-low';
+                const changeIcon = item.sell_rate_change >= 0 ? '✅' : '⚠️';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.value}</strong></td>
+                    <td>${Math.round(item.sales_24 / 1000000).toLocaleString()}</td>
+                    <td>${Math.round(item.sales_25 / 1000000).toLocaleString()}</td>
+                    <td class="${growthClass}">${item.growth_rate >= 0 ? '+' : ''}${item.growth_rate.toFixed(1)}%</td>
+                    <td>${item.sell_rate_24.toFixed(1)}%</td>
+                    <td>${item.sell_rate_25.toFixed(1)}%</td>
+                    <td class="${changeClass}">${item.sell_rate_change >= 0 ? '+' : ''}${item.sell_rate_change.toFixed(1)}%p ${changeIcon}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // AI 인사이트 생성
+            generateWomenDownInsights(type, sortedItems, insightsEl);
+        }
+        
+        // Women Down AI 인사이트 생성
+        function generateWomenDownInsights(type, items, container) {
+            const positiveInsights = [];
+            const warningInsights = [];
+            
+            // 매출 1위
+            const topItem = items[0];
+            if (topItem) {
+                positiveInsights.push(`✅ <strong>${topItem.value}</strong> 매출 1위 (${Math.round(topItem.sales_25 / 1000000).toLocaleString()}백만원)`);
+            }
+            
+            // 성장률 TOP (100% 이상)
+            const highGrowth = items.filter(i => i.growth_rate > 100).sort((a, b) => b.growth_rate - a.growth_rate);
+            highGrowth.slice(0, 2).forEach(item => {
+                if (item !== topItem) {
+                    positiveInsights.push(`💡 <strong>${item.value}</strong> 급성장 (+${item.growth_rate.toFixed(1)}%) - 성장 모멘텀 확보`);
+                }
+            });
+            
+            // 판매율 개선 TOP
+            const rateImproved = items.filter(i => i.sell_rate_change > 5).sort((a, b) => b.sell_rate_change - a.sell_rate_change);
+            rateImproved.slice(0, 1).forEach(item => {
+                positiveInsights.push(`✅ <strong>${item.value}</strong> 판매율 대폭 개선 (<span class="positive">+${item.sell_rate_change.toFixed(1)}%p</span>)`);
+            });
+            
+            // 매출 하락
+            const declining = items.filter(i => i.growth_rate < -20).sort((a, b) => a.growth_rate - b.growth_rate);
+            declining.forEach(item => {
+                warningInsights.push(`🚨 <strong>${item.value}</strong> 매출 하락 (${item.growth_rate.toFixed(1)}%) - 원인 분석 필요`);
+            });
+            
+            // 판매율 하락
+            const rateDeclining = items.filter(i => i.sell_rate_change < -5).sort((a, b) => a.sell_rate_change - b.sell_rate_change);
+            rateDeclining.slice(0, 2).forEach(item => {
+                warningInsights.push(`⚠️ <strong>${item.value}</strong> 판매율 하락 (<span class="negative">${item.sell_rate_change.toFixed(1)}%p</span>) - 재고 관리 주의`);
+            });
+            
+            // HTML 렌더링
+            let html = '<div class="insights-positive">';
+            positiveInsights.forEach(p => { html += `<p>${p}</p>`; });
+            html += '</div>';
+            
+            if (warningInsights.length > 0) {
+                html += '<div class="insights-warnings">';
+                warningInsights.forEach(p => { html += `<p class="warning">${p}</p>`; });
+                html += '</div>';
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        // 카테고리 매출 분석 CSV 로드 및 렌더링 (완전 재작성)
+        async function loadCategorySummary() {
+            try {
+                const response = await fetch('category_summary.csv');
+                if (!response.ok) {
+                    throw new Error('category_summary.csv 로딩 실패: ' + response.status);
+                }
+                
+                const csvText = await response.text();
+                const lines = csvText.trim().split('\n');
+                
+                // CSV 파싱
+                // 구조: category,sales_24,sales_25,sales_growth,qty_24,qty_25,qty_change,in_tag_24,in_tag_25,in_tag_growth,sell_rate_24,sell_rate_25,sell_rate_change
+                const data = {};
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(',');
+                    const category = cols[0].trim();
+                    data[category] = {
+                        sales_24: parseFloat(cols[1]) || 0,
+                        sales_25: parseFloat(cols[2]) || 0,
+                        sales_growth: parseFloat(cols[3]) || 0,
+                        qty_24: parseInt(cols[4]) || 0,
+                        qty_25: parseInt(cols[5]) || 0,
+                        qty_change: parseInt(cols[6]) || 0,
+                        in_tag_24: parseFloat(cols[7]) || 0,
+                        in_tag_25: parseFloat(cols[8]) || 0,
+                        in_tag_growth: parseFloat(cols[9]) || 0,
+                        sell_rate_24: parseFloat(cols[10]) || 0,
+                        sell_rate_25: parseFloat(cols[11]) || 0,
+                        sell_rate_change: parseFloat(cols[12]) || 0
+                    };
+                }
+                
+                // 행 설정 (카테고리, 표시명, CSS 클래스, 이모지)
+                const rowConfig = [
+                    { key: 'TOTAL', label: 'TOTAL', rowClass: 'row-total', emoji: '' },
+                    { key: 'WOMEN', label: 'WOMEN', rowClass: 'row-women', emoji: '' },
+                    { key: 'WOMEN_DOWN', label: 'DOWN', rowClass: 'row-women-sub', emoji: '🔻' },
+                    { key: 'WOMEN_OUTER', label: 'OUTER', rowClass: 'row-women-sub', emoji: '🧥' },
+                    { key: 'WOMEN_TOP', label: 'TOP', rowClass: 'row-women-sub', emoji: '👕' },
+                    { key: 'WOMEN_BOTTOM', label: 'BOTTOM', rowClass: 'row-women-sub', emoji: '👖' },
+                    { key: 'MEN', label: 'MEN', rowClass: 'row-men', emoji: '' },
+                    { key: 'MEN_DOWN', label: 'DOWN', rowClass: 'row-men-sub', emoji: '🔻' },
+                    { key: 'MEN_OUTER', label: 'OUTER', rowClass: 'row-men-sub', emoji: '🧥' },
+                    { key: 'MEN_TOP', label: 'TOP', rowClass: 'row-men-sub', emoji: '👕' },
+                    { key: 'MEN_BOTTOM', label: 'BOTTOM', rowClass: 'row-men-sub', emoji: '👖' },
+                    { key: 'ACC', label: 'ACC', rowClass: 'row-acc', emoji: '' },
+                    { key: 'SHOES', label: 'SHOES', rowClass: 'row-shoes', emoji: '' }
+                ];
+                
+                // 포맷팅 함수
+                const fmtMillion = (num) => Math.round(num / 1000000).toLocaleString();
+                const fmtQty = (num) => num.toLocaleString();
+                const fmtGrowth = (num) => (num >= 0 ? '+' : '') + num.toFixed(1) + '%';
+                const fmtChange = (num) => (num >= 0 ? '+' : '') + num.toLocaleString();
+                const fmtRate = (num) => num.toFixed(1) + '%';
+                const fmtRateChange = (num) => (num >= 0 ? '+' : '') + num.toFixed(1) + '%p';
+                
+                // 숫자 색상 클래스
+                const getNumClass = (num) => {
+                    if (num > 0) return 'num-positive';
+                    if (num < 0) return 'num-negative';
+                    return 'num-zero';
+                };
+                
+                // 테이블 생성
+                const tbody = document.getElementById('categorySummaryTableBody');
+                tbody.innerHTML = '';
+                
+                for (const config of rowConfig) {
+                    const d = data[config.key];
+                    if (!d) continue;
+                    
+                    // 카테고리명 (이모지 포함)
+                    const catLabel = config.emoji 
+                        ? `<span class="cat-emoji">${config.emoji}</span>${config.label}`
+                        : `<span class="cat-name">${config.label}</span>`;
+                    
+                    const tr = document.createElement('tr');
+                    tr.className = config.rowClass;
+                    
+                    tr.innerHTML = `
+                        <td>${catLabel}</td>
+                        <td class="num-cell">${fmtMillion(d.sales_24)}</td>
+                        <td class="num-cell">${fmtMillion(d.sales_25)}</td>
+                        <td class="num-cell ${getNumClass(d.sales_growth)}">${fmtGrowth(d.sales_growth)}</td>
+                        <td class="num-cell">${fmtQty(d.qty_24)}</td>
+                        <td class="num-cell">${fmtQty(d.qty_25)}</td>
+                        <td class="num-cell ${getNumClass(d.qty_change)}">${fmtChange(d.qty_change)}</td>
+                        <td class="num-cell">${fmtMillion(d.in_tag_24)}</td>
+                        <td class="num-cell">${fmtMillion(d.in_tag_25)}</td>
+                        <td class="num-cell ${getNumClass(d.in_tag_growth)}">${fmtGrowth(d.in_tag_growth)}</td>
+                        <td class="num-cell">${fmtRate(d.sell_rate_24)}</td>
+                        <td class="num-cell">${fmtRate(d.sell_rate_25)}</td>
+                        <td class="num-cell ${getNumClass(d.sell_rate_change)}">${fmtRateChange(d.sell_rate_change)}</td>
+                    `;
+                    
+                    tbody.appendChild(tr);
+                }
+                
+                console.log('✅ 카테고리 매출 분석 로딩 완료');
+                
+            } catch (error) {
+                console.error('❌ 카테고리 매출 분석 로딩 실패:', error);
+                document.getElementById('categorySummaryTableBody').innerHTML = 
+                    '<tr><td colspan="13" style="text-align:center; color:#e74c3c;">데이터 로딩 실패</td></tr>';
+            }
+        }
+        
+        // TOP 10 매출 제품 CSV 로드 및 렌더링
+        async function loadBestProducts() {
+            try {
+                const response = await fetch('best_products.csv');
+                if (!response.ok) {
+                    throw new Error('best_products.csv 로딩 실패: ' + response.status);
+                }
+                
+                const csvText = await response.text();
+                const lines = csvText.trim().split('\n');
+                
+                const tbody = document.getElementById('bestProductsTableBody');
+                tbody.innerHTML = '';
+                
+                // 데이터 행 파싱 (헤더 제외)
+                // CSV 구조: rank,style_name,gender,category,fabric,length,downweight,sell_amount_m,sell_qty,sell_rate,stock_status
+                for (let i = 1; i < lines.length && i <= 10; i++) {
+                    const cols = lines[i].split(',');
+                    
+                    const rank = parseInt(cols[0]);
+                    const styleName = cols[1];
+                    const gender = cols[2];
+                    const category = cols[3];
+                    const fabric = cols[4];
+                    const length = cols[5];
+                    const downweight = cols[6];
+                    const sellAmountM = parseFloat(cols[7]).toFixed(1);
+                    const sellQty = parseInt(cols[8]);
+                    
+                    // 메달 아이콘
+                    let medal = '';
+                    let rankClass = '';
+                    if (rank === 1) {
+                        medal = '🥇';
+                        rankClass = 'rank-1';
+                    } else if (rank === 2) {
+                        medal = '🥈';
+                        rankClass = 'rank-2';
+                    } else if (rank === 3) {
+                        medal = '🥉';
+                        rankClass = 'rank-3';
+                    } else {
+                        medal = rank;
+                    }
+                    
+                    // 성별 배지
+                    const genderBadge = gender === 'WOMEN' 
+                        ? '<span class="gender-badge women">여성</span>'
+                        : '<span class="gender-badge men">남성</span>';
+                    
+                    // Fabric × Length × Downweight 조합
+                    const specText = `${fabric} × ${length} × ${downweight}`;
+                    
+                    const tr = `
+                        <tr class="${rankClass}">
+                            <td class="rank-cell">${medal}</td>
+                            <td class="product-name">${styleName}</td>
+                            <td>${genderBadge}</td>
+                            <td><span class="category-badge">${category}</span></td>
+                            <td class="spec-cell">${specText}</td>
+                            <td class="number-cell">${sellAmountM}</td>
+                            <td class="number-cell">${sellQty}</td>
+                        </tr>
+                    `;
+                    
+                    tbody.innerHTML += tr;
+                }
+                
+                console.log('✅ TOP 10 매출 제품 로딩 완료');
+                
+            } catch (error) {
+                console.error('❌ TOP 10 매출 제품 로딩 실패:', error);
+                document.getElementById('bestProductsTableBody').innerHTML = 
+                    '<tr><td colspan="7" style="text-align:center; color:#e74c3c;">데이터 로딩 실패</td></tr>';
+            }
         }
         
         // TOP 10 판매율 제품 CSV 로드 및 렌더링
@@ -2871,7 +3948,7 @@
             const inAmountGrowth = inAmount24 > 0 ? ((inAmount25 - inAmount24) / inAmount24 * 100) : 0;
             
             // 금주
-            const latestWeek = data.latest_week_no_25 || '47w';
+            const latestWeek = data.latest_week_no_25 || '최신주차';
             const weekSales25 = parseFloat(data.week_sales_25 || 0);
             const weekSales24 = parseFloat(data.week_sales_24 || 0);
             const weekSalesGrowth = weekSales24 > 0 ? ((weekSales25 - weekSales24) / weekSales24 * 100) : 0;
@@ -2885,9 +3962,9 @@
             const weekWdSales24 = parseFloat(data.week_wd_sales_24 || 0);
             const weekWdSalesGrowth = weekWdSales24 > 0 ? ((weekWdSales25 - weekWdSales24) / weekWdSales24 * 100) : 0;
             
-            const weekWdRate25 = parseFloat(data.week_wd_sell_rate_25 || 0);
-            const weekWdRate24 = parseFloat(data.week_wd_sell_rate_24 || 0);
-            const weekWdRateChange = weekWdRate25 - weekWdRate24;
+            const weekWdDiscount25 = parseFloat(data.week_wd_discount_rate_25 || 0);
+            const weekWdDiscount24 = parseFloat(data.week_wd_discount_rate_24 || 0);
+            const weekWdDiscountChange = weekWdDiscount25 - weekWdDiscount24;
             
             const weekWdQty25 = parseInt(data.week_wd_sell_qty_25 || 0);
             const weekWdQty24 = parseInt(data.week_wd_sell_qty_24 || 0);
@@ -2974,7 +4051,7 @@
                     </div>
                     <div class="kpi-body">
                         ${createKpiItem('매출', fmtM(weekWdSales25), '백만원', fmtM(weekWdSales24), weekWdSalesGrowth)}
-                        ${createKpiItem('판매율', fmtR(weekWdRate25), '%', fmtR(weekWdRate24), weekWdRateChange)}
+                        ${createKpiItem('할인율', fmtR(weekWdDiscount25), '%', fmtR(weekWdDiscount24), weekWdDiscountChange, true)}
                         ${createKpiItem('판매수량', fmtQ(weekWdQty25), '장', fmtQ(weekWdQty24), weekWdQtyGrowth)}
                     </div>
                 </div>
@@ -3032,28 +4109,79 @@
         }
         
         function generateAIAnalysis(kpi) {
-            console.log('AI 분석 시작 (카테고리 데이터 로딩)...');
+            console.log('AI 분석 시작 (카테고리 + 베스트 상품 + WOMEN DOWN 상세 데이터 로딩)...');
             
-            // 카테고리 데이터 추가 로드
-            fetch('category_summary.csv')
-                .then(r => r.text())
-                .then(categoryText => {
-                    const categories = parseCSV(categoryText);
-                    renderAIAnalysis(kpi, categories);
-                })
-                .catch(error => {
-                    console.error('카테고리 데이터 로드 실패:', error);
-                    renderAIAnalysis(kpi, []);
-                });
+            // 모든 필요 데이터 병렬 로드 (women_down_detail.csv 추가)
+            Promise.all([
+                fetch('category_summary.csv').then(r => r.text()),
+                fetch('best_products.csv').then(r => r.text()),
+                fetch('women_down_detail.csv').then(r => r.text())
+            ])
+            .then(([categoryText, bestProductsText, womenDownDetailText]) => {
+                const categories = parseCSV(categoryText);
+                const bestProducts = parseCSV(bestProductsText);
+                const womenDownDetail = parseCSV(womenDownDetailText);
+                renderAIAnalysis(kpi, categories, bestProducts, womenDownDetail);
+            })
+            .catch(error => {
+                console.error('AI 분석 데이터 로드 실패:', error);
+                renderAIAnalysis(kpi, [], [], []);
+            });
         }
         
-        function renderAIAnalysis(kpi, categories) {
+        function renderAIAnalysis(kpi, categories, bestProducts, womenDownDetail = []) {
             console.log('AI 분석 렌더링 시작...');
             
             // 포맷 헬퍼 함수
             const formatM = (val) => Math.round(parseFloat(val) / 1000000).toLocaleString() + '백만원';
+            const formatMV = (val) => Math.round(parseFloat(val)).toLocaleString() + '백만원';
             const formatP = (val) => parseFloat(val).toFixed(1) + '%';
             const formatG = (val) => (parseFloat(val) >= 0 ? '+' : '') + parseFloat(val).toFixed(1) + '%';
+            const formatChange = (val) => (parseFloat(val) >= 0 ? '+' : '') + parseFloat(val).toFixed(1) + '%p';
+            
+            // 카테고리 데이터 매핑
+            const catMap = {};
+            categories.forEach(c => { catMap[c.category] = c; });
+            
+            // ============================================================
+            // WOMEN DOWN 속성별 매출 및 성장률 (women_down_detail.csv 참조)
+            // ============================================================
+            let lightSales25 = 0, lightGrowth = 0;
+            let middleSales25 = 0, middleGrowth = 0;
+            let texturedSales25 = 0, texturedGrowth = 0;
+            
+            if (womenDownDetail.length > 0) {
+                // 속성별 데이터 분리
+                const fabricData = womenDownDetail.filter(d => d.attribute_type === 'fabric');
+                const lengthData = womenDownDetail.filter(d => d.attribute_type === 'length');
+                const downweightData = womenDownDetail.filter(d => d.attribute_type === 'downweight');
+                
+                // LIGHT 다운 매출 및 성장률
+                const lightData = downweightData.find(d => d.attribute_value === 'LIGHT');
+                if (lightData) {
+                    lightSales25 = parseFloat(lightData.sales_25 || 0);
+                    lightGrowth = parseFloat(lightData.growth_rate || 0);
+                }
+                
+                // MIDDLE 기장 매출 및 성장률
+                const middleData = lengthData.find(d => d.attribute_value === 'MIDDLE');
+                if (middleData) {
+                    middleSales25 = parseFloat(middleData.sales_25 || 0);
+                    middleGrowth = parseFloat(middleData.growth_rate || 0);
+                }
+                
+                // TEXTURED 소재 매출 및 성장률
+                const texturedData = fabricData.find(d => d.attribute_value === 'TEXTURED');
+                if (texturedData) {
+                    texturedSales25 = parseFloat(texturedData.sales_25 || 0);
+                    texturedGrowth = parseFloat(texturedData.growth_rate || 0);
+                }
+                
+                console.log(`WOMEN DOWN 속성 분석: LIGHT ${Math.round(lightSales25/1000000)}백만원 (+${lightGrowth.toFixed(1)}%), MIDDLE ${Math.round(middleSales25/1000000)}백만원 (+${middleGrowth.toFixed(1)}%), TEXTURED ${Math.round(texturedSales25/1000000)}백만원 (+${texturedGrowth.toFixed(1)}%)`);
+            }
+            
+            // 베스트 상품에서 히트 상품 정보 추출
+            const hitProducts = bestProducts.filter(p => p.stock_status === '재고부족');
             
             // ============================================================
             // 1. 핵심 인사이트 (잘된 점 위주)
@@ -3062,60 +4190,80 @@
             
             // 전체 매출 성장
             const totalSales25 = parseFloat(kpi.total_sales_25 || 0);
+            const totalSales24 = parseFloat(kpi.total_sales_24 || 0);
             const totalGrowth = parseFloat(kpi.growth_rate_total_sales || 0);
-            insights.push(`<strong>25FW 누적 매출</strong> ${formatM(totalSales25)} (전년 대비 ${formatG(totalGrowth)} 성장)`);
+            insights.push(`<strong>25FW 누적 매출</strong> ${formatM(totalSales25)} (전년 ${formatM(totalSales24)} 대비 <span class="positive">${formatG(totalGrowth)}</span> 성장)`);
             
             // WOMEN DOWN 핵심 카테고리
-            const wdSales = parseFloat(kpi.wd_sales_25 || 0);
+            const wdSales25 = parseFloat(kpi.wd_sales_25 || 0);
             const wdGrowth = parseFloat(kpi.growth_rate_wd_sales || 0);
-            const wdShare = totalSales25 > 0 ? ((wdSales / totalSales25) * 100).toFixed(1) : 0;
+            const wdShare = totalSales25 > 0 ? ((wdSales25 / totalSales25) * 100).toFixed(1) : 0;
             const wdRate = parseFloat(kpi.wd_sell_rate_25 || 0).toFixed(1);
-            insights.push(`<strong>WOMEN DOWN 매출</strong> ${formatM(wdSales)} (전체의 ${wdShare}%, 판매율 ${wdRate}%) - 핵심 카테고리 집중도 상승`);
+            insights.push(`<strong>WOMEN DOWN 매출</strong> ${formatM(wdSales25)} (전체의 <span class="highlight">${wdShare}%</span>, 판매율 ${wdRate}%, <span class="positive">${formatG(wdGrowth)}</span> 성장)`);
             
-            // 할인율 분석
-            const discountRate25 = parseFloat(kpi.discount_rate_25 || 0);
-            const discountRate24 = parseFloat(kpi.discount_rate_24 || 0);
-            const discountChange = (discountRate25 - discountRate24).toFixed(1);
-            insights.push(`<strong>전체 할인율</strong> ${discountRate25.toFixed(1)}% (전년 ${discountRate24.toFixed(1)}%, ${discountChange >= 0 ? '+' : ''}${discountChange}%p) - 수익성 ${parseFloat(discountChange) < 0 ? '개선' : '유지'}`);
+            // 판매율 개선
+            const sellRateChange = parseFloat(kpi.sell_rate_change_total || 0);
+            const totalSellRate25 = parseFloat(kpi.total_sell_rate_25 || 0);
+            if (sellRateChange > 0) {
+                insights.push(`<strong>전체 판매율</strong> ${totalSellRate25.toFixed(1)}% (전년 대비 <span class="positive">${formatChange(sellRateChange)}</span> 개선) - 재고 효율 향상`);
+            }
             
-            // 금주 실적
-            const weekSales = parseFloat(kpi.week_sales_25 || 0);
-            const weekGrowth = parseFloat(kpi.growth_rate_week_sales || 0);
-            insights.push(`<strong>금주(${kpi.latest_week_no_25}) 매출</strong> ${formatM(weekSales)} (전년 동주 대비 ${formatG(weekGrowth)}) - 시즌 피크 진입`);
+            // 고성장 카테고리 (성장률 100% 이상) - CSV 컬럼명: sales_growth
+            const highGrowthCats = categories.filter(c => parseFloat(c.sales_growth || 0) > 100 && c.category !== 'TOTAL');
+            if (highGrowthCats.length > 0) {
+                const topGrowthCat = highGrowthCats.sort((a, b) => parseFloat(b.sales_growth || 0) - parseFloat(a.sales_growth || 0))[0];
+                insights.push(`<strong>${topGrowthCat.category} 급성장</strong> <span class="positive">${formatG(topGrowthCat.sales_growth)}</span> - 신규 성장 동력 확보`);
+            }
+            
+            // WOMEN DOWN 히트 속성 3가지 (매출 및 성장률 표시, 줄바꿈 포함)
+            const formatSalesM = (val) => Math.round(val / 1000000).toLocaleString() + '백만원';
+            const formatGrowthRate = (val) => (val >= 0 ? '+' : '') + val.toFixed(1) + '%';
+            
+            insights.push(`<strong>WOMEN DOWN 히트 속성 3가지:</strong><br>
+① 경량(LIGHT) 다운: 매출 <span class="highlight">${formatSalesM(lightSales25)}</span> (<span class="positive">${formatGrowthRate(lightGrowth)}</span> 성장)<br>
+② 미드 기장(MIDDLE): 매출 <span class="highlight">${formatSalesM(middleSales25)}</span> (<span class="positive">${formatGrowthRate(middleGrowth)}</span> 성장)<br>
+③ 벨벳(Textured) 소재: 매출 <span class="highlight">${formatSalesM(texturedSales25)}</span> (<span class="positive">${formatGrowthRate(texturedGrowth)}</span> 성장)`);
             
             // ============================================================
             // 2. 주의사항 (카테고리 불균형 중심)
             // ============================================================
             const warnings = [];
             
-            // 카테고리 데이터에서 WOMEN/MEN 찾기
-            const womenTotal = categories.find(c => c.category === 'WOMEN' || (c.gender === 'WOMEN' && !c.category));
-            const menTotal = categories.find(c => c.category === 'MEN' || (c.gender === 'MEN' && !c.category));
+            // WOMEN vs MEN 불균형
+            const womenData = catMap['WOMEN'];
+            const menData = catMap['MEN'];
             
-            if (womenTotal && menTotal) {
-                const womenRate = parseFloat(womenTotal.sell_rate_25 || womenTotal.rate_25 || 0).toFixed(1);
-                const menRate = parseFloat(menTotal.sell_rate_25 || menTotal.rate_25 || 0).toFixed(1);
-                const rateDiff = (parseFloat(womenRate) - parseFloat(menRate)).toFixed(1);
-                warnings.push(`<strong>카테고리 불균형</strong>: WOMEN 판매율 ${womenRate}% vs MEN ${menRate}% (격차 ${rateDiff}%p) - 남성 카테고리 판매 효율 저조`);
-            }
-            
-            // MEN 매출 비중
-            if (menTotal) {
-                const menSales = parseFloat(menTotal.sales_25 || menTotal.sell_amount_25 || 0);
+            if (womenData && menData) {
+                const womenSales = parseFloat(womenData.sales_25 || 0);
+                const menSales = parseFloat(menData.sales_25 || 0);
+                const womenRate = parseFloat(womenData.sell_rate_25 || 0);
+                const menRate = parseFloat(menData.sell_rate_25 || 0);
+                const womenShare = totalSales25 > 0 ? ((womenSales / totalSales25) * 100).toFixed(1) : 0;
                 const menShare = totalSales25 > 0 ? ((menSales / totalSales25) * 100).toFixed(1) : 0;
-                const menGrowth = parseFloat(menTotal.growth || menTotal.growth_rate || 0).toFixed(1);
-                warnings.push(`<strong>MEN 카테고리 매출 비중</strong> ${menShare}% (성장률 ${formatG(menGrowth)}) - WOMEN 대비 현저히 낮은 매출 기여도`);
+                const rateDiff = (womenRate - menRate).toFixed(1);
+                
+                warnings.push(`<strong>성별 불균형</strong>: WOMEN ${womenShare}% vs MEN ${menShare}% (판매율 격차 <span class="negative">${rateDiff}%p</span>) - MEN 매출 비중 확대 필요`);
             }
             
-            // MEN 세부 카테고리 분석
-            const menCategories = categories.filter(c => c.gender === 'MEN' && c.category && c.category !== 'MEN');
-            if (menCategories.length > 0) {
-                const menCatStatus = menCategories.map(c => 
-                    `${c.category}(${parseFloat(c.sell_rate_25 || c.rate_25 || 0).toFixed(1)}%)`
-                ).join(', ');
-                warnings.push(`<strong>MEN 전체 카테고리 판매 부진</strong>: ${menCatStatus} - 상품 구성 및 라인업 전면 점검 필요`);
-            } else {
-                warnings.push(`<strong>MEN 카테고리</strong> - WOMEN 대비 성장률 점검 필요, 상품 구성 다양화 검토`);
+            // MEN 카테고리 분석 - CSV 컬럼명: sales_growth
+            if (menData) {
+                const menGrowth = parseFloat(menData.sales_growth || 0);
+                const menRate = parseFloat(menData.sell_rate_25 || 0);
+                warnings.push(`<strong>MEN 전체</strong>: 판매율 ${menRate.toFixed(1)}% (성장률 ${formatG(menGrowth)}) - WOMEN 대비 효율 저조, 상품력 점검 필요`);
+            }
+            
+            // 매출 하락 카테고리 - CSV 컬럼명: sales_growth
+            const decliningCats = categories.filter(c => parseFloat(c.sales_growth || 0) < 0 && c.category !== 'TOTAL');
+            if (decliningCats.length > 0) {
+                const decliningList = decliningCats.map(c => `${c.category}(${formatG(c.sales_growth)})`).slice(0, 3).join(', ');
+                warnings.push(`<strong>매출 하락 카테고리</strong>: ${decliningList} - 원인 분석 및 대응 필요`);
+            }
+            
+            // 재고과다 상품 (판매율 10% 미만 기준)
+            const overstockProducts = bestProducts.filter(p => p.stock_status === '재고과다');
+            const lowSellRateProducts = bestProducts.filter(p => parseFloat(p.sell_rate || 0) < 10);
+            if (overstockProducts.length > 0 || lowSellRateProducts.length > 0) {
+                warnings.push(`<strong>재고 과다 상품</strong>: 판매율 10% 미만 제품 중 재고 금액 상위 품목 프로모션 검토 필요`);
             }
             
             // ============================================================
@@ -3123,25 +4271,55 @@
             // ============================================================
             const actions = [];
             
-            // 1. 초도 물량 적중도
-            actions.push(`<strong>초도 물량 적중도 향상</strong>: WOMEN DOWN 히트 상품 조기 발굴 시스템 구축 + 빠른 반응생산 프로세스 확립 (리드타임 단축)`);
-            
-            // 2. 베스트 상품 반응생산
-            const wdSellRate = parseFloat(kpi.wd_sell_rate_25 || 0);
-            if (wdSellRate > 25) {
-                actions.push(`<strong>베스트 상품 반응생산</strong>: WOMEN DOWN 고판매율(${wdSellRate.toFixed(1)}%) 제품 즉시 추가 생산 투입 (재고 소진 前 선제 대응)`);
+            // 1. 히트 상품 반응생산
+            if (hitProducts.length > 0) {
+                const hitNames = hitProducts.slice(0, 3).map(p => p.style_name).join(', ');
+                actions.push(`<strong>히트 상품 추가 생산</strong>: "${hitNames}" 즉시 반응생산 투입 (재고 소진 前 선제 대응)`);
             }
             
-            // 3. MEN 카테고리 재점검
-            actions.push(`<strong>MEN 카테고리 상품 구성 재점검</strong>: 전 카테고리(DOWN, OUTER, TOP, BOTTOM) 판매 부진 원인 분석 → 디자인/가격/핏 등 상품 경쟁력 개선안 도출`);
+            // 2. WOMEN DOWN 고효율 유지
+            const wdRateChange = parseFloat(kpi.sell_rate_change_wd || 0);
+            if (wdRateChange > 0) {
+                actions.push(`<strong>WOMEN DOWN 모멘텀 유지</strong>: 판매율 ${formatChange(wdRateChange)} 개선 지속 → 히트 스타일 후속 컬러/사이즈 확대`);
+            }
             
-            // 4. WOMEN BOTTOM 육성
-            const womenBottom = categories.find(c => c.gender === 'WOMEN' && c.category === 'BOTTOM');
-            if (womenBottom) {
-                const bottomRateChange = parseFloat(womenBottom.rate_change || womenBottom.sell_rate_change || 0).toFixed(1);
-                if (parseFloat(bottomRateChange) > 0) {
-                    actions.push(`<strong>WOMEN BOTTOM 육성 전략</strong>: 판매율 +${bottomRateChange}%p 상승 → 차기 SUB 핵심 카테고리 육성 (신규 스타일 확대, 라인업 강화)`);
+            // 3. MEN 카테고리 전략 - MEN DOWN 성장률 검증
+            if (menData) {
+                const menDownData = catMap['MEN_DOWN'];
+                if (menDownData) {
+                    const menDownGrowth = parseFloat(menDownData.sales_growth || 0);
+                    const menDownRate = parseFloat(menDownData.sell_rate_25 || 0);
+                    const menDownSales24 = parseFloat(menDownData.sales_24 || 0);
+                    const menDownSales25 = parseFloat(menDownData.sales_25 || 0);
+                    
+                    // 디버깅: 콘솔에 MEN DOWN 데이터 출력
+                    console.log(`📊 MEN DOWN 24FW 매출: ${menDownSales24.toLocaleString()}원`);
+                    console.log(`📊 MEN DOWN 25FW 매출: ${menDownSales25.toLocaleString()}원`);
+                    console.log(`📊 MEN DOWN 성장률: ${menDownGrowth.toFixed(1)}%`);
+                    
+                    if (menDownSales24 > 0 && !isNaN(menDownGrowth)) {
+                        // 24FW 데이터가 있고 성장률이 정상 계산된 경우
+                        actions.push(`<strong>MEN DOWN 집중 육성</strong>: 성장률 <span class="positive">${formatG(menDownGrowth)}</span> → WOMEN DOWN 성공 공식 적용 (핵심 소재/기장 벤치마킹)`);
+                    } else if (menDownSales25 > 0) {
+                        // 24FW 데이터가 없지만 25FW 판매는 있는 경우 - 판매율 표시
+                        actions.push(`<strong>MEN DOWN 집중 육성</strong>: 판매율 <span class="highlight">${menDownRate.toFixed(1)}%</span> → WOMEN DOWN 성공 공식 적용 (핵심 소재/기장 벤치마킹)`);
+                    }
+                } else {
+                    // MEN DOWN 데이터 자체가 없는 경우
+                    const menRate = parseFloat(menData.sell_rate_25 || 0);
+                    actions.push(`<strong>MEN 카테고리 집중 육성</strong>: 판매율 <span class="highlight">${menRate.toFixed(1)}%</span> 개선 → 상품 라인업 확대 및 마케팅 강화`);
                 }
+            }
+            
+            // 4. 고성장 카테고리 확대 - CSV 컬럼명: sales_growth
+            const womenBottom = catMap['WOMEN_BOTTOM'];
+            if (womenBottom && parseFloat(womenBottom.sales_growth || 0) > 100) {
+                actions.push(`<strong>WOMEN BOTTOM 확대</strong>: 성장률 <span class="positive">${formatG(womenBottom.sales_growth)}</span> → 차기 핵심 카테고리로 육성 (라인업 강화)`);
+            }
+            
+            // 5. 재고 최적화
+            if (overstockProducts.length > 0) {
+                actions.push(`<strong>재고 최적화</strong>: 과다 재고 ${overstockProducts.length}개 상품 판촉 강화 + 차기 시즌 입고량 조정`);
             }
             
             // ============================================================
